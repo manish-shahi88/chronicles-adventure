@@ -1,13 +1,41 @@
 import { gravity } from "./constants";
-import { canvas, ctx } from "./main";
-import playerSprite from "/sprite.png"
+import { canvas, ctx, keys } from "./main";
+import playerSprite from "/sprite.png";
+import playerSpriteLeft from "/spriteFlip.png";
 
-let spriteImg = new Image()
+let spriteImg = new Image();
 spriteImg.src = playerSprite;
+
+let spriteLeft = new Image();
+spriteLeft.src = playerSpriteLeft;
 
 export interface Position {
     x: number;
     y: number;
+}
+
+interface Sprites {
+    stand: {
+        right: HTMLImageElement;
+        // cropWidth: number
+    };
+    run: {
+        right: HTMLImageElement;
+        // cropWidth: number
+
+    };
+    runLeft:{
+        left: HTMLImageElement
+        // cropWidth: number
+    }
+    shootRight:{
+        right: HTMLImageElement
+        // cropWidth: number
+    }
+    shootLeft:{
+        left: HTMLImageElement
+        // cropWidth: number
+    }
 }
 
 export default class Player {
@@ -15,7 +43,14 @@ export default class Player {
     velocity: Position;
     width: number;
     height: number;
-   
+    image: HTMLImageElement;
+    frame: number;
+    sprites: Sprites;
+    currentSprite: HTMLImageElement
+    currentCroppWidth?: number
+    currentCropHeight:number
+    cropWidth: number
+    cropHeight: number
 
     constructor() {
         this.position = {
@@ -26,19 +61,73 @@ export default class Player {
             x: 0,
             y: 1
         };
-        this.width = 30;
-        this.height = 30;
-        
+        this.width = 50;
+        this.height = 70;
+        this.image = spriteImg;
+        this.frame = 0;
+        this.sprites = {
+            stand: {
+                right: spriteImg,
+                // cropWidth:290,
+                // cropHeight: 68               
+            },
+            run: {
+                right: spriteImg,
+                // cropWidth:260 + ((87 + 105) * this.frame)
+            },
+            runLeft:{
+                left: spriteLeft,
+                // cropWidth: 110 + ((87 + 106) * this.frame)
+            },
+            shootRight:{
+                right: spriteImg,
+                // cropWidth: 50
+            },
+            shootLeft:{
+                left: spriteLeft,
+                // cropWidth: 50
+            }
+        };
+        this.currentSprite = this.sprites.run.right
+        this.currentCroppWidth = 290
+        this.currentCropHeight = 65
+        this.cropWidth = 87
+        this.cropHeight = 130
     }
 
     draw() {
-        // ctx.fillStyle = "red";
-        // ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
-        ctx.drawImage(spriteImg,300,70,90,135,this.position.x,this.position.y-50,50,80);
-        
+        ctx.drawImage(
+            this.currentSprite,
+            this.currentCroppWidth!,
+            this.currentCropHeight,
+            this.cropWidth,
+            this.cropHeight,
+            this.position.x, this.position.y, this.width, this.height);
+            // console.log(this.currentCroppWidth);
     }
 
     update() {
+        if(keys.d.pressed && this.currentSprite === this.sprites.run.right) {
+            this.currentCroppWidth = 260 + ((87 + 105) * this.frame)
+            this.currentCropHeight = 531     
+        }
+        else if(keys.a.pressed && this.currentSprite === this.sprites.runLeft.left) {
+            this.currentCroppWidth = 110 + ((87 + 106) * this.frame)
+            this.currentCropHeight = 531  
+        }
+        else if(keys.shoot.pressed && this.currentSprite === this.sprites.shootRight.right) {
+            this.currentCroppWidth = 668
+            this.currentCropHeight = 732  
+            this.cropWidth = 110
+            // this.cropHeight = 143
+        }
+        else if(keys.shoot.pressed === false){
+            this.currentCroppWidth = 260
+        }
+        this.frame++;
+        if (this.frame > 7) {
+            this.frame = 0;
+        }
         this.draw();
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
@@ -48,5 +137,8 @@ export default class Player {
         } else {
             // this.velocity.y = 0;
         }
+    }
+    getPosition(): Position {
+        return this.position;
     }
 }
