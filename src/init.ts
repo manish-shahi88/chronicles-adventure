@@ -6,7 +6,9 @@ import Player from "./Player";
 export default function init(){
     // @ts-ignore
     let player = new Player();
+    // @ts-ignore
     let platforms: Platform[] = [];
+    // @ts-ignore
     let genericObjects: GenericObject[] = []
 
 
