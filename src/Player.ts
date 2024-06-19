@@ -1,5 +1,6 @@
+// import Bullet from "./bullet";
 import { gravity } from "./constants";
-import { canvas, ctx, keys } from "./main";
+import {canvas, ctx, keys } from "./main";
 import playerSprite from "/sprite.png";
 import playerSpriteLeft from "/spriteFlip.png";
 
@@ -110,19 +111,41 @@ export default class Player {
         if(keys.d.pressed && this.currentSprite === this.sprites.run.right) {
             this.currentCroppWidth = 260 + ((87 + 105) * this.frame)
             this.currentCropHeight = 531     
+            // bullets.push(new Bullet({x: this.position.x+this.width, y: this.position.y+this.height/2}, {velocityX: 10, velocityY: 0}, 5))
+
         }
         else if(keys.a.pressed && this.currentSprite === this.sprites.runLeft.left) {
             this.currentCroppWidth = 110 + ((87 + 106) * this.frame)
             this.currentCropHeight = 531  
+            // bullets.push(new Bullet({x: this.position.x+this.width, y: this.position.y+this.height/2}, {velocityX: -10, velocityY: 0}, 5))
+
+
         }
         else if(keys.shoot.pressed && this.currentSprite === this.sprites.shootRight.right) {
             this.currentCroppWidth = 668
             this.currentCropHeight = 732  
             this.cropWidth = 110
+            // bullets.push(new Bullet({x: this.position.x+this.width, y: this.position.y+this.height/2}, {velocityX: -10, velocityY: 0}, 5))
+
+
             // this.cropHeight = 143
         }
-        else if(keys.shoot.pressed === false){
+        else if(keys.shoot.pressed && this.currentSprite === this.sprites.shootLeft.left) {
+            this.currentCroppWidth = 996
+            this.currentCropHeight = 732  
+            this.cropWidth = 110
+            // bullets.push(new Bullet({x: this.position.x+this.width, y: this.position.y+this.height/2}, {velocityX: -10, velocityY: 0}, 5))
+
+
+            // this.cropHeight = 143
+        }
+        else if(keys.shoot.pressed === false && this.currentSprite === this.sprites.shootRight.right ){
             this.currentCroppWidth = 260
+        }
+        else if(keys.shoot.pressed === false && this.currentSprite === this.sprites.shootLeft.left ){
+            this.currentCroppWidth = 258
+            this.currentCropHeight = 64 
+            // this.cropWidth = 200
         }
         this.frame++;
         if (this.frame > 7) {

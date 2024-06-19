@@ -24,7 +24,7 @@ export const hillsImg = new Image();
 hillsImg.src = hills;
 
 let player: Player;
-const bullets: Bullet[] = [];
+export let bullets: Bullet[] = [];
 let platforms: Platform[] = [];
 let genericObjects: GenericObject[] = [];
 export const keys = {
@@ -35,6 +35,9 @@ export const keys = {
         pressed: false
     },
     shoot:{
+        pressed: false
+    },
+    jump:{
         pressed: false
     }
 };
@@ -161,24 +164,39 @@ window.addEventListener("keydown", (event) => {
         case "a": {
             keys.a.pressed = true;
             player.currentSprite = player.sprites.runLeft.left
+            // if(keys.shoot.pressed){}
+            // bullets.push(new Bullet({x: player.position.x+player.width, y: player.position.y+player.height/2}, {velocityX: -10, velocityY: 0}, 5))
+            
+
             break;
         }
         case "d": {
             keys.d.pressed = true;
             player.currentSprite = player.sprites.run.right
             // player.currentCroppWidth = player.sprites.run.cropWidth
+            
             break;
         }
         
         case " ": {
+            keys.jump.pressed = true
             player.velocity.y = -12;
+            
             console.log(event.key);
             break;
         }
         case "Enter":{
             keys.shoot.pressed = true;
-            player.currentSprite = player.sprites.shootRight.right
-            bullets.push(new Bullet({x: player.position.x+player.width, y: player.position.y+player.height/2}, {velocityX: 10, velocityY: 0}, 5))
+            // player.currentSprite = player.sprites.shootRight.right
+            // bullets.push(new Bullet({x: player.position.x+player.width, y: player.position.y+player.height/2}, {velocityX: 10, velocityY: 0}, 5))
+            if(player.currentSprite === player.sprites.runLeft.left && keys.shoot.pressed === true){
+                // player.currentSprite === player.sprites.runLeft.left
+                bullets.push(new Bullet({x: player.position.x, y: player.position.y+player.height/2}, {velocityX: -10, velocityY: 0}, 5))
+
+            }else if(player.currentSprite === player.sprites.run.right && keys.shoot.pressed === true){
+                bullets.push(new Bullet({x: player.position.x+player.width, y: player.position.y+player.height/2}, {velocityX: 10, velocityY: 0}, 5))
+
+            }
         }
         
     }
@@ -205,7 +223,7 @@ window.addEventListener("keyup", (event) => {
         // }
         case "Enter":{
             keys.shoot.pressed = false;
-            player.currentSprite = player.sprites.run.right
+            // player.currentSprite = player.sprites.run.right
         }
     }
 });
