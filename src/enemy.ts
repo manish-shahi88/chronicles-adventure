@@ -1,0 +1,122 @@
+import { gravity } from "./constants";
+import {canvas, ctx} from "./main";
+import enemy from "/enemy.png"
+import playerSpriteLeft from "/spriteFlip.png";
+
+let enemyImg = new Image();
+enemyImg.src = enemy;
+
+let spriteLeft = new Image();
+spriteLeft.src = playerSpriteLeft;
+
+export interface Position {
+    x: number;
+    y: number;
+}
+
+interface EnemyParams {
+    x: number;
+    y: number;
+}
+
+export interface Sprites {
+    stand: {
+        right: HTMLImageElement;
+    };
+    run: {
+        right: HTMLImageElement;
+
+    };
+    runLeft:{
+        left: HTMLImageElement
+    }
+    shootRight:{
+        right: HTMLImageElement
+    }
+    shootLeft:{
+        left: HTMLImageElement
+    }
+}
+
+export default class Enemy {
+    position: Position;
+    velocity: Position;
+    width: number;
+    height: number;
+    image: HTMLImageElement;
+    frame: number;
+    sprites: Sprites;
+    currentSprite: HTMLImageElement
+    currentCroppWidth?: number
+    currentCropHeight:number
+    cropWidth: number
+    cropHeight: number
+
+    constructor({x,y}:EnemyParams) {
+        this.position = {
+            x,
+            y
+        };
+        this.velocity = {
+            x: 1,
+            y: 1
+        };
+        this.width = 50;
+        this.height = 70;
+        this.image = enemyImg;
+        this.frame = 0;
+        this.sprites = {
+            stand: {
+                right: enemyImg,
+                               
+            },
+            run: {
+                right: enemyImg,
+            },
+            runLeft:{
+                left: spriteLeft,
+            },
+            shootRight:{
+                right: enemyImg,
+            },
+            shootLeft:{
+                left: spriteLeft,
+            }
+        };
+        this.currentSprite = this.sprites.run.right
+        this.currentCroppWidth = 67
+        this.currentCropHeight = 0
+        this.cropWidth = 99
+        this.cropHeight = 131
+    }
+
+    draw() {
+        ctx.drawImage(
+            this.currentSprite,
+            this.currentCroppWidth!,
+            this.currentCropHeight,
+            this.cropWidth,
+            this.cropHeight,
+            this.position.x, this.position.y, this.width, this.height);
+    }
+
+    update() {
+    
+        this.draw();
+        this.currentCroppWidth = 67 + ((99 + 48) *this.frame)
+        
+        this.position.x -= this.velocity.x;
+        this.position.y += this.velocity.y;
+
+        if (this.position.y + this.height + this.velocity.y < canvas.height) {
+            this.velocity.y += gravity;
+        }
+        this.frame++;
+        if (this.frame > 10) {
+            this.frame = 0;
+        }
+    }
+    getPosition(): Position {
+        return this.position;
+    }
+}

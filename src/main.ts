@@ -5,8 +5,9 @@ import hills from "/hills.png";
 import Platform from "./Platforms";
 import Player from "./Player";
 import GenericObject from "./GenericObjects";
-import { deadEndDistance, genericObjectSpeed, pit, playerSpeed, treeSpace } from "./constants";
+import { deadEndDistance, enemySpawnX, enemySpawnY, genericObjectSpeed, pit, playerSpeed, treeSpace } from "./constants";
 import Bullet from "./bullet";
+import Enemy from "./enemy";
 
 export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 export const ctx = canvas.getContext("2d")!;
@@ -23,7 +24,8 @@ backgroundImg.src = background;
 export const hillsImg = new Image();
 hillsImg.src = hills;
 
-let player: Player;
+export let player: Player;
+export let enemies: Enemy[]=[]
 export let bullets: Bullet[] = [];
 let platforms: Platform[] = [];
 let genericObjects: GenericObject[] = [];
@@ -46,6 +48,13 @@ let scrollOffset = 0;
 
 function init() {
     player = new Player();
+    
+    //random enemy generation at every 2 seconds
+    setInterval(()=>{
+        enemies.push(new Enemy({ x:player.position.x + enemySpawnX, y:enemySpawnY }));
+    },2000)
+    
+    //platforms creation over the map
     platforms = [
         new Platform({ x: 0, y: 500, image }),
         new Platform({ x: image.width, y: 500, image }),
@@ -65,7 +74,6 @@ function init() {
     ];
     genericObjects = [
         new GenericObject({ x: 0, y: 0, image: backgroundImg }),
-        // new GenericObject({ x: 600, y: 400, image: backgroundImg }),
         new GenericObject({ x: 300, y: 100, image: hillsImg }),
         new GenericObject({ x: 300+treeSpace, y: 100, image: hillsImg }),
         new GenericObject({ x: 300+treeSpace*2, y: 100, image: hillsImg }),
@@ -76,6 +84,7 @@ function init() {
         new GenericObject({ x: 300+treeSpace*10, y: 100, image: hillsImg }),
         new GenericObject({ x: 300+treeSpace*11, y: 100, image: hillsImg }),
     ];
+    
     scrollOffset = 0;
 }
 
@@ -136,6 +145,17 @@ function animate() {
             player.velocity.y = 0;
         }
     });
+    enemies.forEach(enemy =>{
+        enemy.update()
+        platforms.forEach(platform => {
+        if (detectCollisionWithEnemy(enemy, platform)) {
+            enemy.velocity.y = 0;
+        }
+        
+    });
+    })
+    
+    
 
     // win condition
     if (scrollOffset > deadEndDistance) {
@@ -156,6 +176,13 @@ function detectCollision(player: Player, platform: Platform) {
         player.position.x + player.width >= platform.position.x &&
         player.position.x <= platform.position.x + platform.width;
 }
+function detectCollisionWithEnemy(enemy: Enemy, platform: Platform) {
+    return enemy.position.y + enemy.height <= platform.position.y &&
+        enemy.position.y + enemy.height + enemy.velocity.y >= platform.position.y &&
+        enemy.position.x + enemy.width >= platform.position.x &&
+        enemy.position.x <= platform.position.x + platform.width;
+}
+
 
 // Keypress events
 window.addEventListener("keydown", (event) => {
@@ -164,8 +191,6 @@ window.addEventListener("keydown", (event) => {
         case "a": {
             keys.a.pressed = true;
             player.currentSprite = player.sprites.runLeft.left
-            // if(keys.shoot.pressed){}
-            // bullets.push(new Bullet({x: player.position.x+player.width, y: player.position.y+player.height/2}, {velocityX: -10, velocityY: 0}, 5))
             
 
             break;
@@ -173,7 +198,6 @@ window.addEventListener("keydown", (event) => {
         case "d": {
             keys.d.pressed = true;
             player.currentSprite = player.sprites.run.right
-            // player.currentCroppWidth = player.sprites.run.cropWidth
             
             break;
         }
@@ -187,10 +211,7 @@ window.addEventListener("keydown", (event) => {
         }
         case "Enter":{
             keys.shoot.pressed = true;
-            // player.currentSprite = player.sprites.shootRight.right
-            // bullets.push(new Bullet({x: player.position.x+player.width, y: player.position.y+player.height/2}, {velocityX: 10, velocityY: 0}, 5))
             if(player.currentSprite === player.sprites.runLeft.left && keys.shoot.pressed === true){
-                // player.currentSprite === player.sprites.runLeft.left
                 bullets.push(new Bullet({x: player.position.x, y: player.position.y+player.height/2}, {velocityX: -10, velocityY: 0}, 5))
 
             }else if(player.currentSprite === player.sprites.run.right && keys.shoot.pressed === true){
@@ -216,14 +237,9 @@ window.addEventListener("keyup", (event) => {
             player.currentCropHeight = 65
             break;
         }
-        // case " ": {
-        //     // keys.shoot.pressed = false;
-        //     player.currentSprite = player.sprites.stand.right
-
-        // }
+        
         case "Enter":{
             keys.shoot.pressed = false;
-            // player.currentSprite = player.sprites.run.right
         }
     }
 });

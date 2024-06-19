@@ -15,27 +15,22 @@ export interface Position {
     y: number;
 }
 
-interface Sprites {
+export interface Sprites {
     stand: {
         right: HTMLImageElement;
-        // cropWidth: number
     };
     run: {
         right: HTMLImageElement;
-        // cropWidth: number
 
     };
     runLeft:{
         left: HTMLImageElement
-        // cropWidth: number
     }
     shootRight:{
         right: HTMLImageElement
-        // cropWidth: number
     }
     shootLeft:{
         left: HTMLImageElement
-        // cropWidth: number
     }
 }
 
@@ -69,24 +64,19 @@ export default class Player {
         this.sprites = {
             stand: {
                 right: spriteImg,
-                // cropWidth:290,
-                // cropHeight: 68               
+                             
             },
             run: {
                 right: spriteImg,
-                // cropWidth:260 + ((87 + 105) * this.frame)
             },
             runLeft:{
                 left: spriteLeft,
-                // cropWidth: 110 + ((87 + 106) * this.frame)
             },
             shootRight:{
                 right: spriteImg,
-                // cropWidth: 50
             },
             shootLeft:{
                 left: spriteLeft,
-                // cropWidth: 50
             }
         };
         this.currentSprite = this.sprites.run.right
@@ -104,20 +94,17 @@ export default class Player {
             this.cropWidth,
             this.cropHeight,
             this.position.x, this.position.y, this.width, this.height);
-            // console.log(this.currentCroppWidth);
     }
 
     update() {
         if(keys.d.pressed && this.currentSprite === this.sprites.run.right) {
             this.currentCroppWidth = 260 + ((87 + 105) * this.frame)
             this.currentCropHeight = 531     
-            // bullets.push(new Bullet({x: this.position.x+this.width, y: this.position.y+this.height/2}, {velocityX: 10, velocityY: 0}, 5))
 
         }
         else if(keys.a.pressed && this.currentSprite === this.sprites.runLeft.left) {
             this.currentCroppWidth = 110 + ((87 + 106) * this.frame)
             this.currentCropHeight = 531  
-            // bullets.push(new Bullet({x: this.position.x+this.width, y: this.position.y+this.height/2}, {velocityX: -10, velocityY: 0}, 5))
 
 
         }
@@ -125,19 +112,15 @@ export default class Player {
             this.currentCroppWidth = 668
             this.currentCropHeight = 732  
             this.cropWidth = 110
-            // bullets.push(new Bullet({x: this.position.x+this.width, y: this.position.y+this.height/2}, {velocityX: -10, velocityY: 0}, 5))
 
 
-            // this.cropHeight = 143
         }
         else if(keys.shoot.pressed && this.currentSprite === this.sprites.shootLeft.left) {
             this.currentCroppWidth = 996
             this.currentCropHeight = 732  
             this.cropWidth = 110
-            // bullets.push(new Bullet({x: this.position.x+this.width, y: this.position.y+this.height/2}, {velocityX: -10, velocityY: 0}, 5))
 
 
-            // this.cropHeight = 143
         }
         else if(keys.shoot.pressed === false && this.currentSprite === this.sprites.shootRight.right ){
             this.currentCroppWidth = 260
@@ -145,7 +128,6 @@ export default class Player {
         else if(keys.shoot.pressed === false && this.currentSprite === this.sprites.shootLeft.left ){
             this.currentCroppWidth = 258
             this.currentCropHeight = 64 
-            // this.cropWidth = 200
         }
         this.frame++;
         if (this.frame > 7) {

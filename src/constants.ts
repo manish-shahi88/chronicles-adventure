@@ -4,3 +4,5 @@ export const treeSpace = 400
 export const playerSpeed = 5.5
 export const genericObjectSpeed = 1
 export const deadEndDistance = 9100
+export const enemySpawnX = 400
+export const enemySpawnY = 50
