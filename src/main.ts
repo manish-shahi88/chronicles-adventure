@@ -7,6 +7,8 @@ import GenericObject from "./GenericObjects";
 import { deadEndDistance, enemySpawnX, enemySpawnY, genericObjectSpeed, pit, playerSpeed, treeSpace } from "./constants";
 import Bullet from "./bullet";
 import Enemy from "./enemy";
+import EnemyShooter from "./enemyShooter";
+import Stone from "./stone";
 
 export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 export const ctx = canvas.getContext("2d")!;
@@ -34,7 +36,10 @@ backgroundMusic.loop = true
 
 export let player: Player;
 export let enemies: Enemy[] = []
+export let enemyShooters: EnemyShooter[] = []
+
 export let bullets: Bullet[] = [];
+export let stones: Stone[] = []
 let platforms: Platform[] = [];
 let genericObjects: GenericObject[] = [];
 export const keys = {
@@ -61,7 +66,13 @@ function init() {
     //random enemy generation at every 2 seconds
     setInterval(() => {
         enemies.push(new Enemy({ x: player.position.x + enemySpawnX, y: enemySpawnY }));
-    }, 2000)
+    }, 3000)
+
+    //random enemy generation at every 2 seconds
+    setInterval(() => {
+        enemyShooters.push(new EnemyShooter({ x: player.position.x + enemySpawnX+40, y: enemySpawnY+40 }));
+    }, 3000)
+
 
     //platforms creation over the map
     platforms = [
@@ -138,6 +149,12 @@ function animate() {
             enemies.forEach(enemy => {
                 enemy.position.x -= playerSpeed;
             });
+            enemyShooters.forEach(enemyShooter => {
+                enemyShooter.position.x -= playerSpeed;
+            });
+            stones.forEach(stone => {
+                stone.position.x -= playerSpeed;
+            });
         } else if (keys.a.pressed && scrollOffset > 0) {
             scrollOffset -= playerSpeed;
             platforms.forEach(platform => {
@@ -148,6 +165,12 @@ function animate() {
             });
             enemies.forEach(enemy => {
                 enemy.position.x += playerSpeed;
+            });
+            enemyShooters.forEach(enemyShooter => {
+                enemyShooter.position.x += playerSpeed;
+            });
+            stones.forEach(stone => {
+                stone.position.x += playerSpeed;
             });
         }
     }
@@ -171,6 +194,55 @@ function animate() {
         });
     });
 
+    //remove enemyShooter on bullet hit
+    bullets.forEach((bullet, bulletIndex) => {
+        bullet.update();
+
+        enemyShooters.forEach((enemyShooter, enemyShooterIndex) => {
+            if (detectBulletWithEnemyShooterCollision(bullet, enemyShooter)) {
+                const deathSound = new Audio("../src/sounds/deathSound.mp3")
+                deathSound.play()
+                enemyShooters.splice(enemyShooterIndex, 1);
+                bullets.splice(bulletIndex, 1);
+            }
+        });
+    });
+
+    //remove Stones on bullet hit
+    bullets.forEach((bullet, bulletIndex) => {
+        bullet.update();
+
+        stones.forEach((stone, stoneIndex) => {
+            if (detectBulletToStoneCollision(bullet, stone)) {
+                const deathSound = new Audio("../src/sounds/deathSound.mp3")
+                deathSound.play()
+                stones.splice(stoneIndex, 1);
+                bullets.splice(bulletIndex, 1);
+            }
+        });
+    });
+
+    //player dies to enemyshooters stone
+    stones.forEach((stone) => {
+        stone.update();
+
+        if (detectStoneCollision(stone, player)) {
+            playerDeathSound.play();
+            console.log("you lose");
+            init(); // Reset the game
+        }
+    });
+    // Update and draw all stones
+    stones.forEach((stone, index) => {
+        stone.update();
+        
+        // Remove stones that are off the screen
+        if (stone.position.x + stone.width < 0) {
+            stones.splice(index, 1);
+        }
+    });
+
+    // enemies are able to land on platform
     enemies.forEach(enemy => {
         enemy.update();
         platforms.forEach(platform => {
@@ -181,9 +253,29 @@ function animate() {
         });
     });
 
+    // enemiesShooters are able to land on platform
+    enemyShooters.forEach(enemyShooter => {
+        enemyShooter.update();
+        platforms.forEach(platform => {
+            if (detectCollisionWithEnemyShooters(enemyShooter, platform)) {
+                enemyShooter.velocity.y = 0;
+
+            }
+        });
+    });
+
     // player dies and reset to start point
     enemies.forEach((enemy) => {
         if (detectPlayerEnemyCollision(player, enemy)) {
+            playerDeathSound.play()
+            console.log("you lose");
+            init(); // Reset the game
+        }
+    });
+
+    //player dies to enemy stone on collision
+    enemyShooters.forEach((enemyShooter) => {
+        if (detectPlayerEnemyShooterCollision(player, enemyShooter)) {
             playerDeathSound.play()
             console.log("you lose");
             init(); // Reset the game
@@ -241,6 +333,15 @@ function detectCollisionWithEnemy(enemy: Enemy, platform: Platform) {
         enemy.position.x <= platform.position.x + platform.width;
 }
 
+// collision detection between enemyShooter on platform top
+function detectCollisionWithEnemyShooters(enemyShooter: EnemyShooter, platform: Platform) {
+    return enemyShooter.position.y + enemyShooter.height <= platform.position.y &&
+        enemyShooter.position.y + enemyShooter.height + enemyShooter.velocity.y >= platform.position.y &&
+        enemyShooter.position.x + enemyShooter.width >= platform.position.x &&
+        enemyShooter.position.x <= platform.position.x + platform.width;
+}
+
+
 //detect collion of bullet with enemy
 function detectBulletCollision(bullet: Bullet, enemy: Enemy): boolean {
     return bullet.position.x < enemy.position.x + enemy.width / 2 &&
@@ -249,12 +350,45 @@ function detectBulletCollision(bullet: Bullet, enemy: Enemy): boolean {
         bullet.position.y + bullet.height > enemy.position.y;
 }
 
+//detect collion of bullet with enemyShooter
+function detectBulletWithEnemyShooterCollision(bullet: Bullet, enemyShooter: EnemyShooter): boolean {
+    return bullet.position.x < enemyShooter.position.x + enemyShooter.width / 2 &&
+        bullet.position.x + bullet.width / 2 > enemyShooter.position.x &&
+        bullet.position.y < enemyShooter.position.y + enemyShooter.height &&
+        bullet.position.y + bullet.height > enemyShooter.position.y;
+}
+
+//detect collion of player with Stone 
+function detectStoneCollision(stone: Stone, player: Player): boolean {
+    return stone.position.x < player.position.x + player.width / 2 &&
+        stone.position.x + stone.width / 2 > player.position.x &&
+        stone.position.y < player.position.y + player.height &&
+        stone.position.y + stone.height > player.position.y;
+}
+
+//detect collion of bullet with enemyShooter
+function detectBulletToStoneCollision(bullet: Bullet, stone: Stone): boolean {
+    return bullet.position.x < stone.position.x + stone.width / 2 &&
+        bullet.position.x + bullet.width / 2 > stone.position.x &&
+        bullet.position.y < stone.position.y + stone.height &&
+        bullet.position.y + bullet.height > stone.position.y;
+}
+
+
 // detect collision between player and enemy
 function detectPlayerEnemyCollision(player: Player, enemy: Enemy): boolean {
     return player.position.x < enemy.position.x + enemy.width / 2 &&
         player.position.x + player.width / 2 > enemy.position.x &&
         player.position.y < enemy.position.y + enemy.height / 2 &&
         player.position.y + player.height / 2 > enemy.position.y;
+}
+
+// detect collision between player and enemyShooter
+function detectPlayerEnemyShooterCollision(player: Player, enemyShooter: EnemyShooter): boolean {
+    return player.position.x < enemyShooter.position.x + enemyShooter.width / 2 &&
+        player.position.x + player.width / 2 > enemyShooter.position.x &&
+        player.position.y < enemyShooter.position.y + enemyShooter.height / 2 &&
+        player.position.y + player.height / 2 > enemyShooter.position.y;
 }
 
 // Keypress events
