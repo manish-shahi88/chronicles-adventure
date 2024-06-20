@@ -41,6 +41,8 @@ export default class Player {
     height: number;
     image: HTMLImageElement;
     frame: number;
+    frameInterval: number;
+    frameTimer: number;
     sprites: Sprites;
     currentSprite: HTMLImageElement
     currentCroppWidth?: number
@@ -61,6 +63,8 @@ export default class Player {
         this.height = 70;
         this.image = spriteImg;
         this.frame = 0;
+        this.frameInterval = 2; // Adjust this value to control the speed of animation
+        this.frameTimer = 0;
         this.sprites = {
             stand: {
                 right: spriteImg,
@@ -97,13 +101,28 @@ export default class Player {
     }
 
     update() {
+        this.frameTimer++;
         if(keys.d.pressed && this.currentSprite === this.sprites.run.right) {
-            this.currentCroppWidth = 260 + ((87 + 105) * this.frame)
+            if (this.frameTimer >= this.frameInterval) {
+                this.currentCroppWidth = 260 + ((87 + 105) * this.frame)
+                this.frame++;
+                if (this.frame > 7) {
+                    this.frame = 0;
+                }
+                this.frameTimer = 0;
+            }
             this.currentCropHeight = 531     
 
         }
         else if(keys.a.pressed && this.currentSprite === this.sprites.runLeft.left) {
-            this.currentCroppWidth = 110 + ((87 + 106) * this.frame)
+            if (this.frameTimer >= this.frameInterval) {
+                this.currentCroppWidth = 110 + ((87 + 106) * this.frame)     
+                this.frame++;
+                if (this.frame > 7) {
+                    this.frame = 0;
+                }
+                this.frameTimer = 0;
+            }
             this.currentCropHeight = 531  
 
 
@@ -129,10 +148,10 @@ export default class Player {
             this.currentCroppWidth = 258
             this.currentCropHeight = 64 
         }
-        this.frame++;
-        if (this.frame > 7) {
-            this.frame = 0;
-        }
+        // this.frame++;
+        // if (this.frame > 7) {
+        //     this.frame = 0;
+        // }
         this.draw();
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;

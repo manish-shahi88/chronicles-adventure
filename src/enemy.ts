@@ -45,6 +45,8 @@ export default class Enemy {
     height: number;
     image: HTMLImageElement;
     frame: number;
+    frameInterval: number;
+    frameTimer: number;
     sprites: Sprites;
     currentSprite: HTMLImageElement
     currentCroppWidth?: number
@@ -65,6 +67,8 @@ export default class Enemy {
         this.height = 70;
         this.image = enemyImg;
         this.frame = 0;
+        this.frameInterval = 10
+        this.frameTimer = 0
         this.sprites = {
             stand: {
                 right: enemyImg,
@@ -103,7 +107,16 @@ export default class Enemy {
     update() {
     
         this.draw();
-        this.currentCroppWidth = 67 + ((99 + 48) *this.frame)
+        this.frameTimer++
+        if(this.frameTimer >= this.frameInterval){
+            this.currentCroppWidth = 67 + ((99 + 48) *this.frame)
+            this.frame++
+            if(this.frame > 10){
+                this.frame = 0
+            }
+            this.frameTimer = 0
+        }
+        
         
         this.position.x -= this.velocity.x;
         this.position.y += this.velocity.y;
@@ -111,12 +124,15 @@ export default class Enemy {
         if (this.position.y + this.height + this.velocity.y < canvas.height) {
             this.velocity.y += gravity;
         }
-        this.frame++;
-        if (this.frame > 10) {
-            this.frame = 0;
-        }
+        // this.frame++;
+        // if (this.frame > 10) {
+        //     this.frame = 0;
+        // }
     }
     getPosition(): Position {
         return this.position;
     }
 }
+
+
+
