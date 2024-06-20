@@ -1,4 +1,3 @@
-
 import platform from "/platform.png";
 import background from "/background.png";
 import hills from "/hills.png";
@@ -123,6 +122,9 @@ function animate() {
             genericObjects.forEach(genericObject => {
                 genericObject.position.x -= genericObjectSpeed;
             });
+            enemies.forEach(enemy => {
+                enemy.position.x -= playerSpeed;
+            });
         } else if (keys.a.pressed && scrollOffset > 0) {
             scrollOffset -= playerSpeed;
             platforms.forEach(platform => {
@@ -131,13 +133,45 @@ function animate() {
             genericObjects.forEach(genericObject => {
                 genericObject.position.x += genericObjectSpeed;
             });
+            enemies.forEach(enemy => {
+                enemy.position.x += playerSpeed;
+            });
         }
     }
 
 
-    bullets.forEach(bullet => {
+    // bullets.forEach(bullet => {
+    //     bullet.update();
+    // })
+
+    //remove enemy on bullet hit
+    bullets.forEach((bullet, bulletIndex) => {
         bullet.update();
-    })
+        enemies.forEach((enemy, enemyIndex) => {
+            if (detectBulletCollision(bullet, enemy)) {           
+                    enemies.splice(enemyIndex, 1);
+                    bullets.splice(bulletIndex, 1);        
+            }
+        });
+    });
+
+    enemies.forEach(enemy => {
+        enemy.update();
+        platforms.forEach(platform => {
+            if (detectCollisionWithEnemy(enemy, platform)) {
+                enemy.velocity.y = 0;
+                
+            }
+        });
+    });
+
+    // player dies and reset to start point
+    enemies.forEach((enemy) => {
+        if (detectPlayerEnemyCollision(player, enemy)) {
+            console.log("you lose");
+            init(); // Reset the game
+        }
+    });
 
     // detect collision with platforms
     platforms.forEach(platform => {
@@ -145,6 +179,8 @@ function animate() {
             player.velocity.y = 0;
         }
     });
+
+    // detect collision of enemy with platform
     enemies.forEach(enemy =>{
         enemy.update()
         platforms.forEach(platform => {
@@ -169,13 +205,15 @@ function animate() {
     }
 }
 
-// Rectangular collision detection
+// collision detection between player and platform
 function detectCollision(player: Player, platform: Platform) {
     return player.position.y + player.height <= platform.position.y &&
         player.position.y + player.height + player.velocity.y >= platform.position.y &&
         player.position.x + player.width >= platform.position.x &&
         player.position.x <= platform.position.x + platform.width;
 }
+
+// collision detection between enemy on platform top
 function detectCollisionWithEnemy(enemy: Enemy, platform: Platform) {
     return enemy.position.y + enemy.height <= platform.position.y &&
         enemy.position.y + enemy.height + enemy.velocity.y >= platform.position.y &&
@@ -183,6 +221,21 @@ function detectCollisionWithEnemy(enemy: Enemy, platform: Platform) {
         enemy.position.x <= platform.position.x + platform.width;
 }
 
+//detect collion of bullet with enemy
+function detectBulletCollision(bullet: Bullet, enemy: Enemy): boolean {
+    return bullet.position.x < enemy.position.x + enemy.width/2 &&
+           bullet.position.x + bullet.width/2 > enemy.position.x &&
+           bullet.position.y < enemy.position.y + enemy.height &&
+           bullet.position.y + bullet.height > enemy.position.y;
+}
+
+// detect collision between player and enemy
+function detectPlayerEnemyCollision(player: Player, enemy: Enemy): boolean{
+    return player.position.x < enemy.position.x + enemy.width/2 &&
+           player.position.x + player.width/2 > enemy.position.x &&
+           player.position.y < enemy.position.y + enemy.height/2 &&
+           player.position.y + player.height/2 > enemy.position.y;
+}
 
 // Keypress events
 window.addEventListener("keydown", (event) => {
@@ -191,14 +244,11 @@ window.addEventListener("keydown", (event) => {
         case "a": {
             keys.a.pressed = true;
             player.currentSprite = player.sprites.runLeft.left
-            
-
             break;
         }
         case "d": {
             keys.d.pressed = true;
-            player.currentSprite = player.sprites.run.right
-            
+            player.currentSprite = player.sprites.run.right    
             break;
         }
         
@@ -212,10 +262,10 @@ window.addEventListener("keydown", (event) => {
         case "Enter":{
             keys.shoot.pressed = true;
             if(player.currentSprite === player.sprites.runLeft.left && keys.shoot.pressed === true){
-                bullets.push(new Bullet({x: player.position.x, y: player.position.y+player.height/2}, {velocityX: -10, velocityY: 0}, 5))
+                bullets.push(new Bullet({x: player.position.x, y: player.position.y}, {velocityX: -10, velocityY: 0},100,100))
 
             }else if(player.currentSprite === player.sprites.run.right && keys.shoot.pressed === true){
-                bullets.push(new Bullet({x: player.position.x+player.width, y: player.position.y+player.height/2}, {velocityX: 10, velocityY: 0}, 5))
+                bullets.push(new Bullet({x: player.position.x+player.width, y: player.position.y}, {velocityX: 10, velocityY: 0},100,100))
 
             }
         }

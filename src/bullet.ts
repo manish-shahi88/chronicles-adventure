@@ -14,17 +14,20 @@ export interface Velocity {
 export default class Bullet {
     position: Position;
     velocity: Velocity;
-    radius: number;
+    width: number
+    height: number
 
-    constructor(position: Position, velocity: Velocity, radius: number) {
+    constructor(position: Position, velocity: Velocity,width:number,height:number) {
         this.position = position;
         this.velocity = velocity;
-        this.radius = radius;
+        this.width = width
+        this.height = height
+
     }
 
     draw() {
         ctx.beginPath();
-        ctx.drawImage(bulletImg,this.position.x,this.position.y-player.height*3/8)
+        ctx.drawImage(bulletImg,this.position.x,this.position.y-player.height*2/8,this.width,this.height)
         ctx.closePath();
     }
 
