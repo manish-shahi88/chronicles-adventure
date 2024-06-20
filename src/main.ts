@@ -287,6 +287,7 @@ window.addEventListener("keydown", (event) => {
                 keys.shoot.pressed = true;
                 bulletFired = true;
                 const bulletSound = new Audio("../src/sounds/gunfire.mp3");
+                bulletSound.volume = 0.4
                 bulletSound.play();
                 if (player.currentSprite === player.sprites.runLeft.left) {
                     bullets.push(new Bullet({ x: player.position.x, y: player.position.y }, { velocityX: -10, velocityY: 0 }, 100, 100))
