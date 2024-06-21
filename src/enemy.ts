@@ -88,7 +88,7 @@ export default class Enemy {
             }
         };
         this.currentSprite = this.sprites.run.right
-        this.currentCroppWidth = 67
+        this.currentCroppWidth = 87
         this.currentCropHeight = 0
         this.cropWidth = 99
         this.cropHeight = 131
@@ -109,7 +109,7 @@ export default class Enemy {
         this.draw();
         this.frameTimer++
         if(this.frameTimer >= this.frameInterval){
-            this.currentCroppWidth = 67 + ((99 + 48) *this.frame)
+            this.currentCroppWidth = 105 + ((99 + 48) *this.frame)
             this.frame++
             if(this.frame > 10){
                 this.frame = 0
@@ -118,16 +118,13 @@ export default class Enemy {
         }
         
         
-        this.position.x -= this.velocity.x;
+        this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
 
         if (this.position.y + this.height + this.velocity.y < canvas.height) {
             this.velocity.y += gravity;
         }
-        // this.frame++;
-        // if (this.frame > 10) {
-        //     this.frame = 0;
-        // }
+        
     }
     getPosition(): Position {
         return this.position;

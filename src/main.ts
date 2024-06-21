@@ -65,7 +65,7 @@ let bulletFired = false;
 
 let intervalsSet = false
 
-let lives = 3
+let lives = 5
 let gameOver = false
 
 function init() {
@@ -76,24 +76,13 @@ function init() {
     }
     player = new Player();
 
-    // //random enemy generation at every 2 seconds
-    // setInterval(() => {
-    //     enemies.push(new Enemy({ x: player.position.x + enemySpawnX, y: enemySpawnY }));
-    // }, 3000)
-
-    // //random enemy generation at every 2 seconds
-    // setInterval(() => {
-    //     enemyShooters.push(new EnemyShooter({ x: player.position.x + enemySpawnX+40, y: enemySpawnY+40 }));
-    // }, 3000)
-
-
     //platforms creation over the map
     platforms = [
         new Platform({ x: 0, y: 500, image }),
         new Platform({ x: image.width, y: 500, image }),
         new Platform({ x: image.width * 2 + pit, y: 500, image }),
         new Platform({ x: image.width * 3 + pit * 2, y: 400, image }),
-        new Platform({ x: image.width * 4 + pit * 3, y: 300, image }),
+        new Platform({ x: image.width * 4 + pit * 3, y: 300, image }),//
         new Platform({ x: image.width * 5 + pit * 4, y: 200, image }),
         new Platform({ x: image.width * 6 + pit * 5 + pit, y: 300, image }),
         new Platform({ x: image.width * 7 + pit * 6 + pit * 2, y: 300, image }),
@@ -103,6 +92,15 @@ function init() {
         new Platform({ x: image.width * 11 + pit * 10 + pit * 4, y: 500, image }),
         new Platform({ x: image.width * 12 + pit * 11 + pit * 4, y: 500, image }),
         new Platform({ x: image.width * 13 + pit * 12 + pit * 3, y: 500, image }),
+        new Platform({ x: image.width * 14 + pit * 13 + pit * 3, y: 400, image }),
+        new Platform({ x: image.width * 15 + pit * 14 + pit * 3, y: 300, image }),
+        new Platform({ x: image.width * 16 + pit * 15 + pit * 3, y: 400, image }),
+        new Platform({ x: image.width * 17 + pit * 16 + pit * 3, y: 300, image }),
+        new Platform({ x: image.width * 18 + pit * 17 + pit * 3, y: 500, image }),
+        new Platform({ x: image.width * 19 + pit * 18 + pit * 4, y: 500, image }),
+        new Platform({ x: image.width * 20 + pit * 19 + pit * 5, y: 500, image }),
+        new Platform({ x: image.width * 21 + pit * 20 + pit * 6, y: 500, image })
+
 
     ];
     genericObjects = [
@@ -119,7 +117,23 @@ function init() {
     ];
     fires = [
         new Fire({x: image.width/2, y: 400}),
-        new Fire({ x: image.width/2 * 2 + pit, y: 400})
+        new Fire({ x: image.width/2 * 2 + pit, y: 400}),
+        new Fire({ x: image.width * 2 + pit*2, y: 400}),
+        new Fire({ x: image.width * 3 + pit * 3, y: 300}),
+        new Fire({ x: image.width * 4 + pit * 4, y: 200}),
+        new Fire({ x: image.width * 5 + pit * 5, y: 100}),
+        new Fire({ x: image.width * 6 + pit * 6 + pit, y: 200}),
+        new Fire({ x: image.width * 7 + pit * 7 + pit * 2, y: 200}),
+        new Fire({ x: image.width * 8 + pit * 8 + pit * 3, y: 300}),
+        new Fire({ x: image.width * 9 + pit * 9 + pit * 4, y: 400}),
+        new Fire({ x: image.width * 10 + pit * 10 + pit * 4, y: 300}),
+        new Fire({ x: image.width * 11 + pit * 11 + pit * 4, y: 400}),
+        new Fire({ x: image.width * 12 + pit * 12 + pit * 4, y: 400}),
+        new Fire({ x: image.width * 13 + pit * 13 + pit * 3, y: 400}),
+        new Fire({ x: image.width * 14 + pit * 14 + pit * 4, y: 300}),
+        new Fire({ x: image.width * 15 + pit * 15 + pit * 5, y: 200}),
+        new Fire({ x: image.width * 16 + pit * 16 + pit * 5, y: 300}),
+        new Fire({ x: image.width * 17 + pit * 17 + pit * 6, y: 200}),
     ]
 
     scrollOffset = 0;
@@ -135,9 +149,10 @@ image.onload = () => {
         //random enemy generation at every 2 seconds
         setInterval(() => {
             if(!gameOver){
-                enemies.push(new Enemy({ x: player.position.x + enemySpawnX, y: player.position.y-enemySpawnY }));
+                enemies.push(new Enemy({ x: player.position.x - enemySpawnX, y: player.position.y-enemySpawnY }));
+
             }
-        }, 1000)
+        }, 2000)
 
         //random enemy generation at every 2 seconds
         setInterval(() => {
@@ -145,7 +160,7 @@ image.onload = () => {
                 enemyShooters.push(new EnemyShooter({ x: player.position.x + enemyShooterSpawnX, y: player.position.y-enemySpawnY}));
 
             }
-        }, 1000)
+        }, 2000)
     }
 };
 
@@ -176,7 +191,7 @@ function animate() {
     player.update();
 
     player.velocity.x = 0;
-    if ((keys.d.pressed && player.position.x < 500)) {
+    if ((keys.d.pressed && player.position.x < 500) || (keys.d.pressed && scrollOffset === deadEndDistance && player.position.x < deadEndDistance)) {
         player.velocity.x = playerSpeed;
     } else if ((keys.a.pressed && player.position.x > 100) || (keys.a.pressed && scrollOffset === 0 && player.position.x > 0)) {
         player.velocity.x = -playerSpeed;
@@ -226,15 +241,9 @@ function animate() {
         }
     }
 
-
-    // bullets.forEach(bullet => {
-    //     bullet.update();
-    // })
-
     //remove enemy on bullet hit
     bullets.forEach((bullet, bulletIndex) => {
         bullet.update();
-
         enemies.forEach((enemy, enemyIndex) => {
             if (detectBulletCollision(bullet, enemy)) {
                 const deathSound = new Audio("../src/sounds/deathSound.mp3")
@@ -248,7 +257,6 @@ function animate() {
     //remove enemyShooter on bullet hit
     bullets.forEach((bullet, bulletIndex) => {
         bullet.update();
-
         enemyShooters.forEach((enemyShooter, enemyShooterIndex) => {
             if (detectBulletWithEnemyShooterCollision(bullet, enemyShooter)) {
                 const deathSound = new Audio("../src/sounds/deathSound.mp3")
@@ -514,7 +522,7 @@ window.addEventListener("keydown", (event) => {
                 bulletSound.volume = 0.4
                 bulletSound.play();
                 if (player.currentSprite === player.sprites.runLeft.left) {
-                    bullets.push(new Bullet({ x: player.position.x, y: player.position.y }, { velocityX: -10, velocityY: 0 }, 100, 100))
+                    bullets.push(new Bullet({ x: player.position.x - player.width, y: player.position.y }, { velocityX: -10, velocityY: 0 }, 100, 100))
                 } else if (player.currentSprite === player.sprites.run.right) {
                     bullets.push(new Bullet({ x: player.position.x + player.width, y: player.position.y }, { velocityX: 10, velocityY: 0 }, 100, 100))
                 }
