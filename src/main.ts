@@ -9,6 +9,7 @@ import Bullet from "./bullet";
 import Enemy from "./enemy";
 import EnemyShooter from "./enemyShooter";
 import Stone from "./stone";
+import Fire from "./fire";
 
 export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 export const ctx = canvas.getContext("2d")!;
@@ -24,6 +25,8 @@ backgroundImg.src = background;
 
 export const hillsImg = new Image();
 hillsImg.src = hills;
+
+
 
 const zombieSound = new Audio("../src/sounds/zombieSound.mp3")
 zombieSound.volume = 0.4
@@ -42,6 +45,7 @@ export let bullets: Bullet[] = [];
 export let stones: Stone[] = []
 let platforms: Platform[] = [];
 let genericObjects: GenericObject[] = [];
+let fires: Fire[] = []
 export const keys = {
     d: {
         pressed: false
@@ -60,18 +64,20 @@ export const keys = {
 let scrollOffset = 0;
 let bulletFired = false;
 
+let intervalsSet = false
+
 function init() {
     player = new Player();
 
-    //random enemy generation at every 2 seconds
-    setInterval(() => {
-        enemies.push(new Enemy({ x: player.position.x + enemySpawnX, y: enemySpawnY }));
-    }, 3000)
+    // //random enemy generation at every 2 seconds
+    // setInterval(() => {
+    //     enemies.push(new Enemy({ x: player.position.x + enemySpawnX, y: enemySpawnY }));
+    // }, 3000)
 
-    //random enemy generation at every 2 seconds
-    setInterval(() => {
-        enemyShooters.push(new EnemyShooter({ x: player.position.x + enemySpawnX+40, y: enemySpawnY+40 }));
-    }, 3000)
+    // //random enemy generation at every 2 seconds
+    // setInterval(() => {
+    //     enemyShooters.push(new EnemyShooter({ x: player.position.x + enemySpawnX+40, y: enemySpawnY+40 }));
+    // }, 3000)
 
 
     //platforms creation over the map
@@ -104,6 +110,10 @@ function init() {
         new GenericObject({ x: 300 + treeSpace * 10, y: 100, image: hillsImg }),
         new GenericObject({ x: 300 + treeSpace * 11, y: 100, image: hillsImg }),
     ];
+    fires = [
+        new Fire({x: image.width/2, y: 400}),
+        new Fire({ x: image.width/2 * 2 + pit, y: 400})
+    ]
 
     scrollOffset = 0;
 }
@@ -111,6 +121,20 @@ function init() {
 image.onload = () => {
     init();
     animate();
+
+    if(!intervalsSet){
+        intervalsSet = true
+
+        //random enemy generation at every 2 seconds
+        setInterval(() => {
+            enemies.push(new Enemy({ x: player.position.x + enemySpawnX, y: enemySpawnY }));
+        }, 3000)
+
+        //random enemy generation at every 2 seconds
+        setInterval(() => {
+            enemyShooters.push(new EnemyShooter({ x: player.position.x + enemySpawnX+40, y: enemySpawnY+40 }));
+        }, 3000)
+    }
 };
 
 function animate() {
@@ -125,9 +149,14 @@ function animate() {
     genericObjects.forEach(genericObject => {
         genericObject.draw();
     });
+    fires.forEach(fire => {
+        fire.update()
+    })
     platforms.forEach(platform => {
         platform.draw();
     });
+    
+
     player.update();
 
     player.velocity.x = 0;
@@ -155,6 +184,9 @@ function animate() {
             stones.forEach(stone => {
                 stone.position.x -= playerSpeed;
             });
+            fires.forEach(fire => {
+                fire.position.x -= playerSpeed;
+            });
         } else if (keys.a.pressed && scrollOffset > 0) {
             scrollOffset -= playerSpeed;
             platforms.forEach(platform => {
@@ -171,6 +203,9 @@ function animate() {
             });
             stones.forEach(stone => {
                 stone.position.x += playerSpeed;
+            });
+            fires.forEach(fire => {
+                fire.position.x += playerSpeed;
             });
         }
     }
@@ -281,6 +316,15 @@ function animate() {
             init(); // Reset the game
         }
     });
+    //player dies to fire
+
+    fires.forEach((fire) => {
+        if (detectPlayerFireCollision(player, fire)) {
+            playerDeathSound.play()
+            console.log("you lose");
+            init(); // Reset the game
+        }
+    });
 
     // detect collision with platforms
     platforms.forEach(platform => {
@@ -348,6 +392,13 @@ function detectBulletCollision(bullet: Bullet, enemy: Enemy): boolean {
         bullet.position.x + bullet.width / 2 > enemy.position.x &&
         bullet.position.y < enemy.position.y + enemy.height &&
         bullet.position.y + bullet.height > enemy.position.y;
+}
+//detect collision player with fire
+function detectPlayerFireCollision(player: Player, fire: Fire): boolean {
+    return player.position.x < fire.position.x + fire.width / 2 &&
+        player.position.x + player.width / 2 > fire.position.x &&
+        player.position.y < fire.position.y + fire.height/2 &&
+        player.position.y + player.height/2 > fire.position.y;
 }
 
 //detect collion of bullet with enemyShooter
