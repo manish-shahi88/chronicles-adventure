@@ -191,7 +191,7 @@ export default class EnemyShooter {
         
         this.throwTimer++;
         if (this.throwTimer >= this.throwInterval) {
-            stones.push(new Stone({ x: this.position.x, y: this.position.y }, { velocityX: -3, velocityY: 0 }, 100, 100));
+            stones.push(new Stone({ x: this.position.x, y: this.position.y }, { velocityX: -5, velocityY: 0 }, 100, 100));
             this.throwTimer = 0; // Reset the throw timer
         }
     }

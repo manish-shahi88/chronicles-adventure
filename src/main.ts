@@ -4,7 +4,7 @@ import hills from "/hills.png";
 import Platform from "./Platforms";
 import Player from "./Player";
 import GenericObject from "./GenericObjects";
-import { deadEndDistance, enemySpawnX, enemySpawnY, genericObjectSpeed, pit, playerSpeed, treeSpace } from "./constants";
+import { deadEndDistance, enemyShooterSpawnX, enemySpawnX, enemySpawnY, genericObjectSpeed, pit, playerSpeed, treeSpace } from "./constants";
 import Bullet from "./bullet";
 import Enemy from "./enemy";
 import EnemyShooter from "./enemyShooter";
@@ -25,7 +25,6 @@ backgroundImg.src = background;
 
 export const hillsImg = new Image();
 hillsImg.src = hills;
-
 
 
 const zombieSound = new Audio("../src/sounds/zombieSound.mp3")
@@ -66,7 +65,15 @@ let bulletFired = false;
 
 let intervalsSet = false
 
+let lives = 3
+let gameOver = false
+
 function init() {
+
+    if(lives <= 0){
+        gameOver = true
+        return
+    }
     player = new Player();
 
     // //random enemy generation at every 2 seconds
@@ -127,17 +134,26 @@ image.onload = () => {
 
         //random enemy generation at every 2 seconds
         setInterval(() => {
-            enemies.push(new Enemy({ x: player.position.x + enemySpawnX, y: enemySpawnY }));
-        }, 3000)
+            if(!gameOver){
+                enemies.push(new Enemy({ x: player.position.x + enemySpawnX, y: player.position.y-enemySpawnY }));
+            }
+        }, 1000)
 
         //random enemy generation at every 2 seconds
         setInterval(() => {
-            enemyShooters.push(new EnemyShooter({ x: player.position.x + enemySpawnX+40, y: enemySpawnY+40 }));
-        }, 3000)
+            if(!gameOver){
+                enemyShooters.push(new EnemyShooter({ x: player.position.x + enemyShooterSpawnX, y: player.position.y-enemySpawnY}));
+
+            }
+        }, 1000)
     }
 };
 
 function animate() {
+    if(gameOver){
+        displayGameOver()
+        return
+    }
     window.requestAnimationFrame(animate);
     ctx.fillStyle = "white";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -264,7 +280,8 @@ function animate() {
         if (detectStoneCollision(stone, player)) {
             playerDeathSound.play();
             console.log("you lose");
-            init(); // Reset the game
+            // init(); // Reset the game
+            loseLife()
         }
     });
     // Update and draw all stones
@@ -304,7 +321,8 @@ function animate() {
         if (detectPlayerEnemyCollision(player, enemy)) {
             playerDeathSound.play()
             console.log("you lose");
-            init(); // Reset the game
+            // init(); // Reset the game
+            loseLife()
         }
     });
 
@@ -313,7 +331,8 @@ function animate() {
         if (detectPlayerEnemyShooterCollision(player, enemyShooter)) {
             playerDeathSound.play()
             console.log("you lose");
-            init(); // Reset the game
+            // init(); // Reset the game
+            loseLife()
         }
     });
     //player dies to fire
@@ -322,7 +341,8 @@ function animate() {
         if (detectPlayerFireCollision(player, fire)) {
             playerDeathSound.play()
             console.log("you lose");
-            init(); // Reset the game
+            // init(); // Reset the game
+            loseLife()
         }
     });
 
@@ -357,8 +377,27 @@ function animate() {
     if (player.position.y > canvas.height) {
         playerDeathSound.play()
         console.log("you lose");
-        init(); // Reset the game
+        // init(); // Reset the game
+        loseLife()
     }
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.fillText(`Lives: ${lives}`, 20, 50);  // Display lives
+}
+
+function loseLife() {
+    lives -= 1;
+    if (lives > 0) {
+        init(); // Reset the game
+    } else {
+        gameOver = true;  // Set game over if no lives left
+    }
+}
+
+function displayGameOver() {
+    ctx.fillStyle = "White";
+    ctx.font = "bold 50px Arial";
+    ctx.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);  // Display game over message
 }
 
 // collision detection between player and platform

@@ -5,4 +5,5 @@ export const playerSpeed = 5.5
 export const genericObjectSpeed = 1
 export const deadEndDistance = 9100
 export const enemySpawnX = 400
+export const enemyShooterSpawnX = 500
 export const enemySpawnY = 50

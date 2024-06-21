@@ -1,5 +1,4 @@
-import { gravity } from "./constants";
-import {canvas, ctx} from "./main";
+import {ctx} from "./main";
 import fire from "/fire.png"
 
 let fireImg = new Image();
