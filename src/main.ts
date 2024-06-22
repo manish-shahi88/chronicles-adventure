@@ -68,6 +68,7 @@ let intervalsSet = false
 let lives = 5
 let gameOver = false
 
+
 function init() {
 
     if(lives <= 0){
@@ -163,6 +164,12 @@ image.onload = () => {
         }, 2000)
     }
 };
+
+function displayYouWin() {
+    ctx.fillStyle = "Green";
+    ctx.font = "bold 70px Arial";
+    ctx.fillText("Victory", canvas.width / 2 - 100, canvas.height / 2);
+}
 
 function animate() {
     if(gameOver){
@@ -378,8 +385,12 @@ function animate() {
 
     // win condition
     if (scrollOffset > deadEndDistance) {
-        console.log("you win");
+        displayYouWin();  // Call the function to display "You Win" message
+        return;  // Stop further animation
     }
+    // if (scrollOffset > deadEndDistance) {
+    //     console.log("you win");
+    // }
 
     // lose condition
     if (player.position.y > canvas.height) {
