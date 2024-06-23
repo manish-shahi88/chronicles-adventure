@@ -1,13 +1,9 @@
-import { gravity } from "./constants";
-import {canvas, ctx} from "./main";
-import enemy from "/enemy.png"
-import playerSpriteLeft from "/spriteFlip.png";
+import { gravity } from "../../../constants";
+import {canvas, ctx} from "../../../main";
+import enemy from "/images/enemy.png"
 
 let enemyImg = new Image();
 enemyImg.src = enemy;
-
-let spriteLeft = new Image();
-spriteLeft.src = playerSpriteLeft;
 
 export interface Position {
     x: number;
@@ -19,24 +15,6 @@ interface EnemyParams {
     y: number;
 }
 
-export interface Sprites {
-    stand: {
-        right: HTMLImageElement;
-    };
-    run: {
-        right: HTMLImageElement;
-
-    };
-    runLeft:{
-        left: HTMLImageElement
-    }
-    shootRight:{
-        right: HTMLImageElement
-    }
-    shootLeft:{
-        left: HTMLImageElement
-    }
-}
 
 export default class Enemy {
     position: Position;
@@ -47,7 +25,6 @@ export default class Enemy {
     frame: number;
     frameInterval: number;
     frameTimer: number;
-    sprites: Sprites;
     currentSprite: HTMLImageElement
     currentCroppWidth?: number
     currentCropHeight:number
@@ -69,25 +46,7 @@ export default class Enemy {
         this.frame = 0;
         this.frameInterval = 10
         this.frameTimer = 0
-        this.sprites = {
-            stand: {
-                right: enemyImg,
-                               
-            },
-            run: {
-                right: enemyImg,
-            },
-            runLeft:{
-                left: spriteLeft,
-            },
-            shootRight:{
-                right: enemyImg,
-            },
-            shootLeft:{
-                left: spriteLeft,
-            }
-        };
-        this.currentSprite = this.sprites.run.right
+        this.currentSprite = enemyImg
         this.currentCroppWidth = 87
         this.currentCropHeight = 0
         this.cropWidth = 99

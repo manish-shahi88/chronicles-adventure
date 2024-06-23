@@ -1,5 +1,5 @@
-import {ctx} from "./main";
-import fire from "/fire.png"
+import {ctx} from "../../main";
+import fire from "/images/fire.png"
 
 let fireImg = new Image();
 fireImg.src = fire;
@@ -9,31 +9,7 @@ export interface Position {
     y: number;
 }
 
-// interface EnemyParams {
-//     x: number;
-//     y: number;
-// }
-
-export interface Sprites {
-    stand: {
-        right: HTMLImageElement;
-    };
-    run: {
-        right: HTMLImageElement;
-
-    };
-    runLeft:{
-        left: HTMLImageElement
-    }
-    shootRight:{
-        right: HTMLImageElement
-    }
-    shootLeft:{
-        left: HTMLImageElement
-    }
-}
-
-export default class Enemy {
+export default class Fire {
     position: Position;
     velocity: Position;
     width: number;
@@ -42,7 +18,7 @@ export default class Enemy {
     frame: number;
     frameInterval: number;
     frameTimer: number;
-    sprites: Sprites;
+    // sprites: Sprites;
     currentSprite: HTMLImageElement
     currentCroppWidth?: number
     currentCropHeight:number
@@ -64,31 +40,13 @@ export default class Enemy {
         this.frame = 0;
         this.frameInterval = 10
         this.frameTimer = 0
-        this.sprites = {
-            stand: {
-                right: fireImg,
-                               
-            },
-            run: {
-                right: fireImg,
-            },
-            runLeft:{
-                left: fireImg,
-            },
-            shootRight:{
-                right: fireImg,
-            },
-            shootLeft:{
-                left: fireImg,
-            }
-        };
-        this.currentSprite = this.sprites.run.right
+        this.currentSprite = fireImg
         this.currentCroppWidth = 32
         this.currentCropHeight = 0
         this.cropWidth = 136
         this.cropHeight = 223
-        this.width = 100
-        this.height = 150
+        this.width = 90
+        this.height = 130
     }
 
     draw() {
@@ -112,19 +70,7 @@ export default class Enemy {
                 this.frame = 0
             }
             this.frameTimer = 0
-        }
-        
-        
-        // this.position.x -= this.velocity.x;
-        // this.position.y += this.velocity.y;
-
-        // if (this.position.y + this.height + this.velocity.y < canvas.height) {
-        //     this.velocity.y += gravity;
-        // }
-        // this.frame++;
-        // if (this.frame > 10) {
-        //     this.frame = 0;
-        // }
+        }       
     }
     getPosition(): Position {
         return this.position;

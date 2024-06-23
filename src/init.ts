@@ -1,7 +1,7 @@
-import GenericObject from "./GenericObjects";
+import GenericObject from "./components/nonMovable/GenericObjects";
 import { backgroundImg, hillsImg, image } from "./main";
-import Platform from "./Platforms";
-import Player from "./Player";
+import Platform from "./components/nonMovable/Platforms";
+import Player from "./components/movable/player/Player";
 
 export default function init(){
     // @ts-ignore
@@ -10,9 +10,6 @@ export default function init(){
     let platforms: Platform[] = [];
     // @ts-ignore
     let genericObjects: GenericObject[] = []
-
-
-    
     image.onload = () => {
         platforms = [new Platform({ x: 0, y: 500, image }), new Platform({ x: image.width, y: 500, image }),new Platform({ x: image.width*2+150, y: 500, image })];
         animate();

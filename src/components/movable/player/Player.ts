@@ -1,8 +1,8 @@
 // import Bullet from "./bullet";
-import { gravity } from "./constants";
-import {canvas, ctx, keys } from "./main";
-import playerSprite from "/sprite.png";
-import playerSpriteLeft from "/spriteFlip.png";
+import { gravity } from "../../../constants";
+import {canvas, ctx, keys } from "../../../main";
+import playerSprite from "/images/sprite.png";
+import playerSpriteLeft from "/images/spriteFlip.png";
 
 let spriteImg = new Image();
 spriteImg.src = playerSprite;

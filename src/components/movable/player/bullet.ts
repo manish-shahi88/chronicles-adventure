@@ -1,7 +1,7 @@
 
-import { ctx, player } from "./main"; 
+import { ctx, player } from "../../../main"; 
 import { Position } from "./Player";
-import bullet from "/bullet.png"
+import bullet from "/images/bullet.png"
 
 const bulletImg = new Image()
 bulletImg.src = bullet

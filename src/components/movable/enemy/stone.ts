@@ -1,6 +1,6 @@
-import { ctx } from "./main"; 
-import { Position } from "./Player";
-import stone from "/stone.png";
+import { ctx } from "../../../main"; 
+import { Position } from "../player/Player";
+import stone from "/images/stone.png";
 
 let stoneImg = new Image();
 stoneImg.src = stone;

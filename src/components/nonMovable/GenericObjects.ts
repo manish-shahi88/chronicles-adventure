@@ -1,5 +1,5 @@
-import { ctx } from "./main";
-import { Position } from "./Player";
+import { ctx } from "../../main";
+import { Position } from "../movable/player/Player";
 
 export interface PlatformProps {
     x: number;
@@ -7,7 +7,7 @@ export interface PlatformProps {
     image: HTMLImageElement;
 }
 
-export default class Platform {
+export default class GenericObject {
     position: Position;
     image: HTMLImageElement;
     width: number;
