@@ -53,7 +53,7 @@ export let enemyShooters: EnemyShooter[] = []
 
 export let bullets: Bullet[] = [];
 export let stones: Stone[] = []
-let platforms: Platform[] = [];
+export let platforms: Platform[] = [];
 let genericObjects: GenericObject[] = [];
 export let fires: Fire[] = []
 export const keys = {

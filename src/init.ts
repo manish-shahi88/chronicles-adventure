@@ -1,5 +1,5 @@
 import GenericObject from "./components/nonMovable/GenericObjects";
-import { backgroundImg, hillsImg, image } from "./main";
+import { backgroundImg, image, treeImg } from "./main";
 import Platform from "./components/nonMovable/Platforms";
 import Player from "./components/movable/player/Player";
 
@@ -16,7 +16,7 @@ export default function init(){
     };
     
     backgroundImg.onload = () =>{
-      genericObjects = [new GenericObject({ x: 0, y: 0, image:backgroundImg }), new Platform({ x: 600, y: 400, image:backgroundImg }),new Platform({ x: 300, y: 100, image:hillsImg })]
+      genericObjects = [new GenericObject({ x: 0, y: 0, image:backgroundImg }), new Platform({ x: 600, y: 400, image:backgroundImg }),new Platform({ x: 300, y: 100, image:treeImg })]
     }
 }
 
