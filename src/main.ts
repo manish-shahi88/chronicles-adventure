@@ -19,15 +19,15 @@ import EnemyShooter from "./components/movable/enemy/enemyShooter";
 import Stone from "./components/movable/enemy/stone";
 import Fire from "./components/nonMovable/fire";
 import { detectBulletCollision, detectBulletToStoneCollision, detectBulletWithEnemyShooterCollision, detectCollision, detectCollisionWithEnemy, detectCollisionWithEnemyShooters, detectPlayerEnemyCollision, detectPlayerEnemyShooterCollision, detectPlayerFireCollision, detectStoneCollision } from "./physics/collisionDetection";
-// import { setupEditorControls } from './event/editorModeHandler';
 
-
+// Canvas setup
 export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 export const ctx = canvas.getContext("2d")!;
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// Images assets
 export const image = new Image();
 image.src = platform;
 
@@ -37,14 +37,13 @@ backgroundImg.src = background;
 export const treeImg = new Image();
 treeImg.src = tree;
 
-
+// Audio assets
 const zombieSound = new Audio(zombieSoundSrc)
 zombieSound.volume = 0.4
 const backgroundMusic = new Audio(backgroundMusicSrc)
 backgroundMusic.volume = 0.4
 const playerDeathSound = new Audio(playerDeathSoundSrc)
 playerDeathSound.volume = 0.9
-
 backgroundMusic.loop = true
 
 export let player: Player;
@@ -66,16 +65,20 @@ export const keys = {
 
 let scrollOffset = 0;
 let bulletFired = false;
-
 let intervalsSet = false
-
 let lives = 5
 let gameOver = false
+let paused = false
+let victory = false
+let showGuidance = true;
+let score = 0;
 
+// Editor mode settings
 let editorMode = window.location.pathname.includes("levelEditor.html");
 let selectedObjectType: 'platform' | 'enemy' | 'fire' = 'platform';
 let draggingObject: any = null;
 
+// Initialize game state
 function init() {
     if (editorMode) {
         // Initialize editor-specific settings if needed
@@ -87,7 +90,7 @@ function init() {
     }
     player = new Player();
 
-    //platforms creation over the map
+    // Create Platforms
     platforms = [
         new Platform({ x: 0, y: 500, image }),
         new Platform({ x: image.width, y: 500, image }),
@@ -114,6 +117,8 @@ function init() {
 
 
     ];
+
+    // Create Static objects
     genericObjects = [
         new GenericObject({ x: 0, y: 0, image: backgroundImg }),
         new GenericObject({ x: 300, y: 100, image: treeImg }),
@@ -137,6 +142,8 @@ function init() {
         new GenericObject({ x: 300 + treeSpace * 22, y: 100, image: treeImg }),
 
     ];
+
+    // Create Fires
     fires = [
         new Fire({x: image.width/2, y: 400}),
         new Fire({ x: image.width/2 * 2 + pit, y: 400}),
@@ -161,24 +168,24 @@ function init() {
     scrollOffset = 0;
 }
 
+
+// Start the game loop once the image is loaded
 image.onload = () => {
     init();
     animate();
 
     if(!intervalsSet){
         intervalsSet = true
-
         //random enemy generation at every 2 seconds
         setInterval(() => {
-            if(!gameOver){
+            if(!gameOver && !paused){
                 enemies.push(new Enemy({ x: player.position.x - enemySpawnX, y: player.position.y-enemySpawnY }));
-
             }
-        }, 2000)
+        }, 500)
 
         //random enemy generation at every 2 seconds
         setInterval(() => {
-            if(!gameOver){
+            if(!gameOver && !paused){
                 enemyShooters.push(new EnemyShooter({ x: player.position.x + enemyShooterSpawnX, y: player.position.y-enemySpawnY}));
 
             }
@@ -186,16 +193,31 @@ image.onload = () => {
     }
 };
 
+// Display "Victory" message
 function displayYouWin() {
     ctx.fillStyle = "Green";
     ctx.font = "bold 70px Arial";
     ctx.fillText("Victory", canvas.width / 2 - 100, canvas.height / 2);
+    gameOver = false
+    victory = true
 }
 
-
+// Main game loop
 function animate() {
     if(gameOver){
         displayGameOver()
+        return
+    }
+    if(victory){
+        displayYouWin()
+        return
+    }
+    if(paused){
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.font = "bold 70px Arial";
+        ctx.fillText("Paused", canvas.width / 2 - 100, canvas.height / 2);
         return
     }
     window.requestAnimationFrame(animate);
@@ -205,13 +227,17 @@ function animate() {
 
     backgroundMusic.play()
 
-
+    // Draw backgroun elements
     genericObjects.forEach(genericObject => {
         genericObject.draw();
     });
+
+    // Update and draw fires
     fires.forEach(fire => {
         fire.update()
     })
+
+    // Draw platforms
     platforms.forEach(platform => {
         platform.draw();
     });
@@ -220,6 +246,7 @@ function animate() {
     if (!editorMode) {
         player.update();
 
+        // Handle player movement
         player.velocity.x = 0;
         if ((keys.d.pressed && player.position.x < 500) || (keys.d.pressed && scrollOffset === deadEndDistance && player.position.x < deadEndDistance)) {
             player.velocity.x = playerSpeed;
@@ -271,7 +298,7 @@ function animate() {
             }
         }
 
-        // Remove enemy on bullet hit
+        // Handle bullet-enemy collision
         bullets.forEach((bullet, bulletIndex) => {
             bullet.update();
             enemies.forEach((enemy, enemyIndex) => {
@@ -280,12 +307,13 @@ function animate() {
                     deathSound.play();
                     enemies.splice(enemyIndex, 1);
                     bullets.splice(bulletIndex, 1);
+                    score += 10
                 }
             });
         });
 
 
-        // Remove enemy shooter on bullet hit
+        // Handle bullet-stone collision
         bullets.forEach((bullet, bulletIndex) => {
             bullet.update();
             enemyShooters.forEach((enemyShooter, enemyShooterIndex) => {
@@ -294,11 +322,12 @@ function animate() {
                     deathSound.play();
                     enemyShooters.splice(enemyShooterIndex, 1);
                     bullets.splice(bulletIndex, 1);
+                    score += 10
                 }
             });
         });
 
-        // Remove stones on bullet hit
+        // Handle stone collision with player
         bullets.forEach((bullet, bulletIndex) => {
             bullet.update();
 
@@ -312,7 +341,7 @@ function animate() {
             });
         });
 
-        // Player dies to enemy shooter's stone
+         // Handle stone collision with player
         stones.forEach((stone) => {
             stone.update();
 
@@ -323,7 +352,7 @@ function animate() {
             }
         });
 
-        // Update and draw all stones
+        // Update and draw stones
         stones.forEach((stone, index) => {
             stone.update();
 
@@ -333,7 +362,7 @@ function animate() {
             }
         });
 
-        // Enemies are able to land on platforms
+        // Enemies land on platforms
         enemies.forEach(enemy => {
             enemy.update();
             platforms.forEach(platform => {
@@ -353,7 +382,7 @@ function animate() {
             });
         });
 
-        // Player dies and reset to start point
+        // Handle player-enemy collision
         enemies.forEach((enemy) => {
             if (detectPlayerEnemyCollision(player, enemy)) {
                 playerDeathSound.play();
@@ -362,7 +391,7 @@ function animate() {
             }
         });
 
-        // Player dies to enemy stone on collision
+        // Handle player-enemy shooter collision
         enemyShooters.forEach((enemyShooter) => {
             if (detectPlayerEnemyShooterCollision(player, enemyShooter)) {
                 playerDeathSound.play();
@@ -371,7 +400,7 @@ function animate() {
             }
         });
 
-        // Player dies to fire
+        // Handle player-fire collision
         fires.forEach((fire) => {
             if (detectPlayerFireCollision(player, fire)) {
                 playerDeathSound.play();
@@ -380,17 +409,16 @@ function animate() {
             }
         });
 
-        // Detect collision with platforms
+        // Handle player-platform collision
         platforms.forEach(platform => {
             if (detectCollision(player, platform)) {
                 player.velocity.y = 0;
             }
         });
 
-        // Detect collision of enemy with platform
+        // Handle enemy-platform collision
         enemies.forEach(enemy => {
             enemy.update();
-
             zombieSound.play();
             platforms.forEach(platform => {
                 if (detectCollisionWithEnemy(enemy, platform)) {
@@ -412,9 +440,26 @@ function animate() {
             loseLife();
         }
 
+        // Display lives of player
         ctx.fillStyle = "white";
         ctx.font = "20px Arial";
-        ctx.fillText(`Lives: ${lives}`, 20, 50); // Display lives
+        ctx.fillText(`Lives: ${lives}`, 20, 50); 
+
+        // Display score
+        ctx.fillText(`Survival Score: ${score}`, canvas.width - 200, 50);
+
+        // Show Guidance
+        if (showGuidance) {
+            ctx.fillStyle = "white";
+            ctx.font = "14px Arial";
+            ctx.fillText("Use keys to Play:", 20, 80);
+            ctx.fillText("A: Move Left", 30, 100);
+            ctx.fillText("D: Move Right", 30, 120);
+            ctx.fillText("Space: Jump", 30, 140);
+            ctx.fillText("Enter: Fire", 30, 160);
+            ctx.fillText("P: Pause", 30, 180);
+            ctx.fillText("Press 'G' to toggle guidance", 20, 220);
+        }
 
     } else {
         // Draw player in editor mode for reference
@@ -422,7 +467,7 @@ function animate() {
     }
 }
 
-
+// Reduce player's life and reset the game if there are lives left
 function loseLife() {
     lives -= 1;
     if (lives > 0) {
@@ -432,6 +477,7 @@ function loseLife() {
     }
 }
 
+// Display "Game Over" message
 function displayGameOver() {
     ctx.fillStyle = "White";
     ctx.font = "bold 50px Arial";
@@ -469,7 +515,7 @@ window.addEventListener("keydown", (event) => {
                 keys.shoot.pressed = true;
                 bulletFired = true;
                 const bulletSound = new Audio(bulletSoundSrc);
-                bulletSound.volume = 0.4
+                bulletSound.volume = 0.2
                 bulletSound.play();
                 if (player.currentSprite === player.sprites.runLeft.left) {
                     bullets.push(new Bullet({ x: player.position.x - player.width, y: player.position.y }, { velocityX: -10, velocityY: 0 }, 100, 100))
@@ -477,6 +523,19 @@ window.addEventListener("keydown", (event) => {
                     bullets.push(new Bullet({ x: player.position.x + player.width, y: player.position.y }, { velocityX: 10, velocityY: 0 }, 100, 100))
                 }
             }
+            break;
+        }
+        case "p":
+        case "P": {
+            paused = !paused; // Toggle pause state
+            if (!paused) {
+                animate(); // Resume animation loop if unpaused
+            }
+            break;
+        }
+        case "g":
+        case "G": {
+            showGuidance = !showGuidance; // Toggle guidance visibility
             break;
         }
     }
@@ -505,10 +564,7 @@ window.addEventListener("keyup", (event) => {
     }
 });
 
-
-
-// ************************************
-//editorMode
+// // Editor mode specific event listeners
 if (editorMode) {
     document.getElementById('selectPlatform')!.addEventListener('click', () => {
         selectedObjectType = 'platform';
@@ -555,6 +611,7 @@ if (editorMode) {
     });
 }
 
+// Place new object in editor mode
 function placeObject(x: number, y: number) {
     if (selectedObjectType === 'platform') {
         platforms.push(new Platform({ x, y, image }));
@@ -565,6 +622,7 @@ function placeObject(x: number, y: number) {
     }
 }
 
+// Find an object at a specific position in editor mode
 function findObjectAtPosition(x: number, y: number) {
     return platforms.find(platform => x >= platform.position.x && x <= platform.position.x + platform.width &&
         y >= platform.position.y && y <= platform.position.y + platform.height) ||
@@ -574,6 +632,7 @@ function findObjectAtPosition(x: number, y: number) {
         y >= fire.position.y && y <= fire.position.y + fire.height);
 }
 
+// Save the current level data
 function saveLevel() {
     const levelData = {
         platforms: platforms.map(platform => ({ x: platform.position.x, y: platform.position.y })),
@@ -589,6 +648,7 @@ function saveLevel() {
     downloadAnchorNode.remove();
 }
 
+// Load a level from a file
 function loadLevel(event: Event) {
     const fileInput = event.target as HTMLInputElement;
     if (fileInput.files) {
@@ -602,6 +662,7 @@ function loadLevel(event: Event) {
     }
 }
 
+// Parse and load level data
 function loadLevelData(levelData: any) {
     platforms = levelData.platforms.map((platformData: any) => new Platform({ x: platformData.x, y: platformData.y, image }));
     enemies = levelData.enemies.map((enemyData: any) => new Enemy({ x: enemyData.x, y: enemyData.y }));
