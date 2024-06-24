@@ -1,4 +1,3 @@
-
 import platform from "/images/platform.png";
 import background from "/images/background.png";
 import tree from "/images/tree.png";
@@ -8,6 +7,7 @@ import backgroundMusicSrc from "/sounds/backgroundMusic.mp3"
 import playerDeathSoundSrc from "/sounds/soldierScream.mp3"
 import deathSoundSrc from "/sounds/deathSound.mp3"
 import bulletSoundSrc from "/sounds/gunfire.mp3"
+import explosionSrc from "/sounds/explosion.mp3"
 
 import Platform from "./components/nonMovable/Platforms";
 import Player from "./components/movable/player/Player";
@@ -19,6 +19,8 @@ import EnemyShooter from "./components/movable/enemy/enemyShooter";
 import Stone from "./components/movable/enemy/stone";
 import Fire from "./components/nonMovable/fire";
 import { detectBulletCollision, detectBulletToStoneCollision, detectBulletWithEnemyShooterCollision, detectCollision, detectCollisionWithEnemy, detectCollisionWithEnemyShooters, detectPlayerEnemyCollision, detectPlayerEnemyShooterCollision, detectPlayerFireCollision, detectStoneCollision } from "./physics/collisionDetection";
+import Explosion from "./components/movable/enemy/explosion";
+
 
 // Canvas setup
 export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
@@ -55,6 +57,7 @@ export let stones: Stone[] = []
 export let platforms: Platform[] = [];
 let genericObjects: GenericObject[] = [];
 export let fires: Fire[] = []
+export let explosions: Explosion[] = []
 export const keys = {
     d: {pressed: false},
     a: {pressed: false},
@@ -327,14 +330,26 @@ function animate() {
             });
         });
 
+        
+        explosions.forEach((explosion) => {
+            explosion.update()
+        })
+
+        // Remove finished explosions
+        explosions = explosions.filter(explosion => !explosion.isFinished);
+
         // Handle stone collision with player
         bullets.forEach((bullet, bulletIndex) => {
             bullet.update();
 
             stones.forEach((stone, stoneIndex) => {
                 if (detectBulletToStoneCollision(bullet, stone)) {
-                    const deathSound = new Audio(deathSoundSrc);
-                    deathSound.play();
+                    const explosionSound = new Audio(explosionSrc);
+                    explosionSound.play();
+                    
+                    const explosion = new Explosion({x:stone.position.x,y:stone.position.y})
+                    explosions.push(explosion)
+
                     stones.splice(stoneIndex, 1);
                     bullets.splice(bulletIndex, 1);
                 }
@@ -463,7 +478,7 @@ function animate() {
 
     } else {
         // Draw player in editor mode for reference
-        player.draw();
+        // player.draw();
     }
 }
 
@@ -505,8 +520,10 @@ window.addEventListener("keydown", (event) => {
 
         case " ": {
             keys.jump.pressed = true
+            if(player.velocity.y != 0){
+                break
+            }
             player.velocity.y = -12;
-
             console.log(event.key);
             break;
         }
