@@ -21,7 +21,6 @@ import Fire from "./components/nonMovable/fire";
 import { detectBulletCollision, detectBulletToStoneCollision, detectBulletWithEnemyShooterCollision, detectCollision, detectCollisionWithEnemy, detectCollisionWithEnemyShooters, detectPlayerEnemyCollision, detectPlayerEnemyShooterCollision, detectPlayerFireCollision, detectStoneCollision } from "./physics/collisionDetection";
 import Explosion from "./components/movable/enemy/explosion";
 import Drone from "./components/movable/player/fighterDrone";
-// import DroneBullet from "./components/movable/player/droneBullets";
 
 
 // Canvas setup
@@ -83,7 +82,6 @@ let score = 0;
 let droneUpdateStart = false;
 let droneUpdateTimeout = false;
 let showDroneMessage = false;
-let droneMessageDisplayed = false;
 
 // Editor mode settings
 let editorMode = window.location.pathname.includes("levelEditor.html");
@@ -632,111 +630,6 @@ window.addEventListener("keyup", (event) => {
     }
 });
 
-// // Editor mode specific event listeners
-// if (editorMode) {
-//     document.getElementById('selectPlatform')!.addEventListener('click', () => {
-//         selectedObjectType = 'platform';
-//     });
-
-//     document.getElementById('selectEnemy')!.addEventListener('click', () => {
-//         selectedObjectType = 'enemy';
-//     });
-
-//     document.getElementById('selectFire')!.addEventListener('click', () => {
-//         selectedObjectType = 'fire';
-//     });
-
-//     document.getElementById('saveLevel')!.addEventListener('click', saveLevel);
-//     document.getElementById('loadLevel')!.addEventListener('click', () => {
-//         document.getElementById('fileInput')!.click();
-//     });
-//     document.getElementById('fileInput')!.addEventListener('change', loadLevel);
-
-//     canvas.addEventListener('mousedown', (e) => {
-//         if (editorMode) {
-//             const mouseX = e.offsetX;
-//             const mouseY = e.offsetY;
-//             draggingObject = findObjectAtPosition(mouseX, mouseY);
-//             // if (!draggingObject) {
-//             //     placeObject(mouseX, mouseY);
-//             // }
-//         }
-//     });
-
-//     canvas.addEventListener('mousemove', (e) => {
-//         if (editorMode && draggingObject) {
-//             const mouseX = e.offsetX;
-//             const mouseY = e.offsetY;
-//             draggingObject.position.x = mouseX;
-//             draggingObject.position.y = mouseY;
-//         }
-//     });
-
-//     canvas.addEventListener('mouseup', () => {
-//         if (editorMode) {
-//             draggingObject = null;
-//         }
-//     });
-// }
-
-// // Place new object in editor mode
-// function placeObject(x: number, y: number) {
-//     if (selectedObjectType === 'platform') {
-//         platforms.push(new Platform({ x, y, image }));
-//     } else if (selectedObjectType === 'enemy') {
-//         enemies.push(new Enemy({ x, y }));
-//     } else if (selectedObjectType === 'fire') {
-//         fires.push(new Fire({ x, y }));
-//     }
-// }
-
-// // Find an object at a specific position in editor mode
-// function findObjectAtPosition(x: number, y: number) {
-//     return platforms.find(platform => x >= platform.position.x && x <= platform.position.x + platform.width &&
-//         y >= platform.position.y && y <= platform.position.y + platform.height) ||
-//         enemies.find(enemy => x >= enemy.position.x && x <= enemy.position.x + enemy.width &&
-//         y >= enemy.position.y && y <= enemy.position.y + enemy.height) ||
-//         fires.find(fire => x >= fire.position.x && x <= fire.position.x + fire.width &&
-//         y >= fire.position.y && y <= fire.position.y + fire.height);
-// }
-
-// // Save the current level data
-// function saveLevel() {
-//     const levelData = {
-//         platforms: platforms.map(platform => ({ x: platform.position.x, y: platform.position.y })),
-//         enemies: enemies.map(enemy => ({ x: enemy.position.x, y: enemy.position.y })),
-//         fires: fires.map(fire => ({ x: fire.position.x, y: fire.position.y }))
-//     };
-//     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(levelData));
-//     const downloadAnchorNode = document.createElement('a');
-//     downloadAnchorNode.setAttribute("href", dataStr);
-//     downloadAnchorNode.setAttribute("download", "level.json");
-//     document.body.appendChild(downloadAnchorNode);
-//     downloadAnchorNode.click();
-//     downloadAnchorNode.remove();
-// }
-
-// // Load a level from a file
-// function loadLevel(event: Event) {
-//     const fileInput = event.target as HTMLInputElement;
-//     if (fileInput.files) {
-//         const file = fileInput.files[0];
-//         const reader = new FileReader();
-//         reader.onload = (e) => {
-//             const levelData = JSON.parse(e.target!.result as string);
-//             loadLevelData(levelData);
-//         };
-//         reader.readAsText(file);
-//     }
-// }
-
-// // Parse and load level data
-// function loadLevelData(levelData: any) {
-//     platforms = levelData.platforms.map((platformData: any) => new Platform({ x: platformData.x, y: platformData.y, image }));
-//     enemies = levelData.enemies.map((enemyData: any) => new Enemy({ x: enemyData.x, y: enemyData.y }));
-//     fires = levelData.fires.map((fireData: any) => new Fire({ x: fireData.x, y: fireData.y }));
-// }
-
 
 if (editorMode) {
     document.getElementById('selectPlatform')!.addEventListener('click', () => {
@@ -862,9 +755,3 @@ function loadLevelData(levelData: any) {
     fires = levelData.fires.map((fireData: any) => new Fire({ x: fireData.x, y: fireData.y }));
 }
 
-
-// other imports and game setup code here...
-
-// if (editorMode) {
-//     setupEditorControls(canvas, platforms, enemies, fires, Platform, Enemy, Fire, image);
-// }
