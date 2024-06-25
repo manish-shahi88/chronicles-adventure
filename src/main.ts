@@ -1,7 +1,7 @@
 import platform from "/images/platform.png";
 import background from "/images/background.png";
 import tree from "/images/tree.png";
-import scene from "/images/bg-large.png"
+import scene from "/images/background 4.png"
 
 import zombieSoundSrc from "/sounds/zombieSound.mp3"
 import backgroundMusicSrc from "/sounds/backgroundMusic.mp3"
@@ -26,6 +26,7 @@ import BackGround from "./components/nonMovable/scene";
 
 const sceneImageSrc = new Image()
 sceneImageSrc.src = scene
+console.log(sceneImageSrc)
 // Canvas setup
 export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 export const ctx = canvas.getContext("2d")!;
@@ -103,7 +104,7 @@ function init() {
         return
     }
     player = new Player();
-    sceneImg = new BackGround({x:0,y:0,image:sceneImageSrc})
+    // sceneImg = new BackGround({x:0,y:0,image:sceneImageSrc})
     drone = new Drone(
         { x: player.position.x, y: player.position.y - 100 },
         { velocityX: 0, velocityY: 0 },
@@ -141,26 +142,26 @@ function init() {
 
     // Create Static objects
     genericObjects = [
-        new GenericObject({ x: 0, y: 0, image: backgroundImg }),
-        new GenericObject({ x: 300, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 2, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 3, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 5, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 7, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 9, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 10, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 12, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 13, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 14, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 15, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 16, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 17, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 18, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 19, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 20, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 21, y: canvas.height-treeImg.height, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 22, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 0, y: 0, image: sceneImageSrc }),
+        new GenericObject({ x: 300, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 2, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 3, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 5, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 7, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 9, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 10, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 12, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 13, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 14, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 15, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 16, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 17, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 18, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 19, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 20, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 21, y: canvas.height-treeImg.height/2, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 22, y: canvas.height-treeImg.height/2, image: treeImg }),
 
     ];
 
@@ -194,12 +195,12 @@ function init() {
         new Fire({ x: image.width * 5 + pit * 4 + image.width / 2, y: canvas.height - image.height * 5}),
         new Fire({ x: image.width * 6 + pit * 5 + pit + image.width / 2, y: canvas.height - image.height * 4}),
         new Fire({ x: image.width * 7 + pit * 6 + pit * 2 + image.width / 2, y: canvas.height - image.height * 4}),
-        new Fire({ x: image.width * 8 + pit * 7 + pit * 3 + image.width / 2, y: canvas.height - image.height  }),
-        new Fire({ x: image.width * 9 + pit * 8 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
-        new Fire({ x: image.width * 10 + pit * 9 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
-        new Fire({ x: image.width * 11 + pit * 10 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
-        new Fire({ x: image.width * 12 + pit * 11 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
-        new Fire({ x: image.width * 13 + pit * 12 + pit * 3 + image.width / 2, y: canvas.height - image.height }),
+        new Fire({ x: image.width * 8 + pit * 7 + pit * 3 + image.width / 2, y: canvas.height - image.height*3  }),
+        new Fire({ x: image.width * 9 + pit * 8 + pit * 4 + image.width / 2, y: canvas.height - image.height*3 }),
+        new Fire({ x: image.width * 10 + pit * 9 + pit * 4 + image.width / 2, y: canvas.height - image.height*2 }),
+        new Fire({ x: image.width * 11 + pit * 10 + pit * 4 + image.width / 2, y: canvas.height - image.height*2 }),
+        new Fire({ x: image.width * 12 + pit * 11 + pit * 4 + image.width / 2, y: canvas.height - image.height*2 }),
+        new Fire({ x: image.width * 13 + pit * 12 + pit * 3 + image.width / 2, y: canvas.height - image.height*2 }),
         new Fire({ x: image.width * 14 + pit * 13 + pit * 3 + image.width / 2, y: canvas.height - image.height * 2 }),
         new Fire({ x: image.width * 15 + pit * 14 + pit * 3 + image.width / 2, y: canvas.height - image.height * 3 }),
         new Fire({ x: image.width * 16 + pit * 15 + pit * 3 + image.width / 2, y: canvas.height - image.height * 2 }),
@@ -277,6 +278,7 @@ function animate() {
     backgroundMusic.play()
 
     // Draw background elements
+    // sceneImg.draw()
     genericObjects.forEach(genericObject => {
         genericObject.draw();
     });
