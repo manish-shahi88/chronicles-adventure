@@ -1,5 +1,5 @@
 import platform from "/images/platform.png";
-import background from "/images/background.png";
+import background from "/images/bg-large.png";
 import tree from "/images/tree.png";
 
 import zombieSoundSrc from "/sounds/zombieSound.mp3"
@@ -137,48 +137,48 @@ function init() {
     // Create Static objects
     genericObjects = [
         new GenericObject({ x: 0, y: 0, image: backgroundImg }),
-        new GenericObject({ x: 300, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 2, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 3, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 5, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 7, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 9, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 10, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 12, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 13, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 14, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 15, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 16, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 17, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 18, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 19, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 20, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 21, y: 100, image: treeImg }),
-        new GenericObject({ x: 300 + treeSpace * 22, y: 100, image: treeImg }),
+        new GenericObject({ x: 300, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 2, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 3, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 5, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 7, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 9, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 10, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 12, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 13, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 14, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 15, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 16, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 17, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 18, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 19, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 20, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 21, y: canvas.height-treeImg.height, image: treeImg }),
+        new GenericObject({ x: 300 + treeSpace * 22, y: canvas.height-treeImg.height, image: treeImg }),
 
     ];
 
     // Create Fires
     fires = [
-        new Fire({x: image.width/2, y: 400}),
-        new Fire({ x: image.width/2 * 2 + pit, y: 400}),
-        new Fire({ x: image.width * 2 + pit*2, y: 400}),
-        new Fire({ x: image.width * 3 + pit * 3, y: 300}),
-        new Fire({ x: image.width * 4 + pit * 4, y: 200}),
-        new Fire({ x: image.width * 5 + pit * 5, y: 100}),
-        new Fire({ x: image.width * 6 + pit * 6 + pit, y: 200}),
-        new Fire({ x: image.width * 7 + pit * 7 + pit * 2, y: 200}),
-        new Fire({ x: image.width * 8 + pit * 8 + pit * 3, y: 300}),
-        new Fire({ x: image.width * 9 + pit * 9 + pit * 4, y: 400}),
-        new Fire({ x: image.width * 10 + pit * 10 + pit * 4, y: 300}),
-        new Fire({ x: image.width * 11 + pit * 11 + pit * 4, y: 400}),
-        new Fire({ x: image.width * 12 + pit * 12 + pit * 4, y: 400}),
-        new Fire({ x: image.width * 13 + pit * 13 + pit * 3, y: 400}),
-        new Fire({ x: image.width * 14 + pit * 14 + pit * 4, y: 300}),
-        new Fire({ x: image.width * 15 + pit * 15 + pit * 5, y: 200}),
-        new Fire({ x: image.width * 16 + pit * 16 + pit * 4, y: 300}),
-        new Fire({ x: image.width * 17 + pit * 17 + pit * 6, y: 200}),
+        new Fire({x: image.width/2, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width/2 * 2 + pit, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width * 2 + pit*2, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width * 3 + pit * 3, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width * 4 + pit * 4, y: canvas.height-image.height*3}),
+        new Fire({ x: image.width * 5 + pit * 5, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width * 6 + pit * 6 + pit, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width * 7 + pit * 7 + pit * 2, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width * 8 + pit * 8 + pit * 3, y: canvas.height-image.height*3}),
+        new Fire({ x: image.width * 9 + pit * 9 + pit * 4, y: canvas.height-image.height}),
+        new Fire({ x: image.width * 10 + pit * 10 + pit * 4, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width * 11 + pit * 11 + pit * 4, y: canvas.height-image.height}),
+        new Fire({ x: image.width * 12 + pit * 12 + pit * 4, y: canvas.height-image.height}),
+        new Fire({ x: image.width * 13 + pit * 13 + pit * 3, y: canvas.height-image.height}),
+        new Fire({ x: image.width * 14 + pit * 14 + pit * 4, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width * 15 + pit * 15 + pit * 5, y: canvas.height-image.height*3}),
+        new Fire({ x: image.width * 16 + pit * 16 + pit * 4, y: canvas.height-image.height*2}),
+        new Fire({ x: image.width * 17 + pit * 17 + pit * 6, y: canvas.height-image.height*3}),
     ]
 
     scrollOffset = 0;

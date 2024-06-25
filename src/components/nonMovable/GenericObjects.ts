@@ -12,7 +12,7 @@ export default class GenericObject {
     image: HTMLImageElement;
     width: number;
     height: number;
-
+    
     constructor({ x, y, image }: PlatformProps) {
         this.position = {
             x,
