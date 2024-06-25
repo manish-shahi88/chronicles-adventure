@@ -108,8 +108,8 @@ function init() {
 
     // Create Platforms
     platforms = [
-        new Platform({ x: 0, y: 500, image }),
-        new Platform({ x: image.width, y: 500, image }),
+        new Platform({ x: 0, y: canvas.height - image.height, image }),
+        new Platform({ x: image.width, y: canvas.height- image.height, image }),
         new Platform({ x: image.width * 2 + pit, y: 500, image }),
         new Platform({ x: image.width * 3 + pit * 2, y: 400, image }),
         new Platform({ x: image.width * 4 + pit * 3, y: 300, image }),//
