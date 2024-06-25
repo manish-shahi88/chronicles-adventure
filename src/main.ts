@@ -22,7 +22,6 @@ import Fire from "./components/nonMovable/fire";
 import { detectBulletCollision, detectBulletToStoneCollision, detectBulletWithEnemyShooterCollision, detectCollision, detectCollisionWithEnemy, detectCollisionWithEnemyShooters, detectPlayerEnemyCollision, detectPlayerEnemyShooterCollision, detectPlayerFireCollision, detectStoneCollision } from "./physics/collisionDetection";
 import Explosion from "./components/movable/enemy/explosion";
 import Drone from "./components/movable/player/fighterDrone";
-import { displayGameOver, displayYouWin, showDroneMessageText, showGuidanceText } from "./message/message";
 import BackGround from "./components/nonMovable/scene";
 
 const sceneImageSrc = new Image()
@@ -193,8 +192,8 @@ function init() {
         new Fire({ x: image.width * 3 + pit * 2 + image.width / 2, y: canvas.height - image.height * 3}),
         new Fire({ x: image.width * 4 + pit * 3 + image.width / 2, y: canvas.height - image.height * 4}),
         new Fire({ x: image.width * 5 + pit * 4 + image.width / 2, y: canvas.height - image.height * 5}),
-        new Fire({ x: image.width * 6 + pit * 5 + pit + image.width / 2, y: canvas.height - image.height * 3}),
-        new Fire({ x: image.width * 7 + pit * 6 + pit * 2 + image.width / 2, y: canvas.height - image.height * 3}),
+        new Fire({ x: image.width * 6 + pit * 5 + pit + image.width / 2, y: canvas.height - image.height * 4}),
+        new Fire({ x: image.width * 7 + pit * 6 + pit * 2 + image.width / 2, y: canvas.height - image.height * 4}),
         new Fire({ x: image.width * 8 + pit * 7 + pit * 3 + image.width / 2, y: canvas.height - image.height  }),
         new Fire({ x: image.width * 9 + pit * 8 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
         new Fire({ x: image.width * 10 + pit * 9 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
@@ -235,18 +234,31 @@ image.onload = () => {
     }
 };
 
+// // Display "Victory" message
+function displayYouWin() {
+    ctx.fillStyle = "Green";
+    ctx.font = "bold 70px Arial";
+    ctx.fillText("Victory", ctx.canvas.width / 2 - 100, ctx.canvas.height / 2);
+    gameOver = false
+    victory = true
+}
 
-
+// Display "Game Over" message
+function displayGameOver() {
+    ctx.fillStyle = "White";
+    ctx.font = "bold 50px Arial";
+    ctx.fillText("Game Over", ctx.canvas.width / 2 - 100, ctx.canvas.height / 2);
+}
 
 
 // Main game loop
 function animate() {
     if(gameOver){
-        displayGameOver(ctx)
+        displayGameOver()
         return
     }
     if(victory){
-        displayYouWin(ctx, gameOver, victory);
+        displayYouWin();
         return
     }
     if(paused){
@@ -450,7 +462,7 @@ function animate() {
 
         // Win condition
         if (scrollOffset > deadEndDistance) {
-            displayYouWin(ctx, gameOver, victory);
+            displayYouWin();
             return; // Stop further animation
         }
 
@@ -470,9 +482,23 @@ function animate() {
         ctx.fillText(`Survival Score: ${score}`, canvas.width - 200, 50);
 
         // Show Guidance
-        showGuidanceText(ctx, showGuidance);
+        if (showGuidance) {
+            ctx.fillStyle = "white";
+            ctx.font = "14px Arial";
+            ctx.fillText("Use keys to Play:", 20, 80);
+            ctx.fillText("A: Move Left", 30, 100);
+            ctx.fillText("D: Move Right", 30, 120);
+            ctx.fillText("Space: Jump", 30, 140);
+            ctx.fillText("Enter: Fire", 30, 160);
+            ctx.fillText("P: Pause", 30, 180);
+            ctx.fillText("Press 'G' to toggle guidance", 20, 220);
+        }
         // Drone Incoming message
-        showDroneMessageText(ctx, showDroneMessage);
+        if (showDroneMessage) {
+            ctx.fillStyle = "White";
+            ctx.font = "25px Arial";
+            ctx.fillText("Friendly fighter drone is on the way...", ctx.canvas.width / 2 - 200, ctx.canvas.height / 2 - 50);
+        }
        
 
     } else {
