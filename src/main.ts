@@ -1,6 +1,7 @@
 import platform from "/images/platform.png";
-import background from "/images/bg-large.png";
+import background from "/images/background.png";
 import tree from "/images/tree.png";
+import scene from "/images/bg-large.png"
 
 import zombieSoundSrc from "/sounds/zombieSound.mp3"
 import backgroundMusicSrc from "/sounds/backgroundMusic.mp3"
@@ -21,8 +22,11 @@ import Fire from "./components/nonMovable/fire";
 import { detectBulletCollision, detectBulletToStoneCollision, detectBulletWithEnemyShooterCollision, detectCollision, detectCollisionWithEnemy, detectCollisionWithEnemyShooters, detectPlayerEnemyCollision, detectPlayerEnemyShooterCollision, detectPlayerFireCollision, detectStoneCollision } from "./physics/collisionDetection";
 import Explosion from "./components/movable/enemy/explosion";
 import Drone from "./components/movable/player/fighterDrone";
+import { displayGameOver, displayYouWin, showDroneMessageText, showGuidanceText } from "./message/message";
+import BackGround from "./components/nonMovable/scene";
 
-
+const sceneImageSrc = new Image()
+sceneImageSrc.src = scene
 // Canvas setup
 export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 export const ctx = canvas.getContext("2d")!;
@@ -50,6 +54,7 @@ playerDeathSound.volume = 0.9
 backgroundMusic.loop = true
 
 export let player: Player;
+export let sceneImg: BackGround
 export let enemies: Enemy[] = []
 export let enemyShooters: EnemyShooter[] = []
 
@@ -99,6 +104,7 @@ function init() {
         return
     }
     player = new Player();
+    sceneImg = new BackGround({x:0,y:0,image:sceneImageSrc})
     drone = new Drone(
         { x: player.position.x, y: player.position.y - 100 },
         { velocityX: 0, velocityY: 0 },
@@ -160,26 +166,46 @@ function init() {
     ];
 
     // Create Fires
+    // fires = [
+    //     new Fire({x: image.width/2, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width/2 * 2 + pit, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width * 2 + pit*2, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width * 3 + pit * 3, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width * 4 + pit * 4, y: canvas.height-image.height*3}),
+    //     new Fire({ x: image.width * 5 + pit * 5, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width * 6 + pit * 6 + pit, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width * 7 + pit * 7 + pit * 2, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width * 8 + pit * 8 + pit * 3, y: canvas.height-image.height*3}),
+    //     new Fire({ x: image.width * 9 + pit * 9 + pit * 4, y: canvas.height-image.height}),
+    //     new Fire({ x: image.width * 10 + pit * 10 + pit * 4, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width * 11 + pit * 11 + pit * 4, y: canvas.height-image.height}),
+    //     new Fire({ x: image.width * 12 + pit * 12 + pit * 4, y: canvas.height-image.height}),
+    //     new Fire({ x: image.width * 13 + pit * 13 + pit * 3, y: canvas.height-image.height}),
+    //     new Fire({ x: image.width * 14 + pit * 14 + pit * 4, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width * 15 + pit * 15 + pit * 5, y: canvas.height-image.height*3}),
+    //     new Fire({ x: image.width * 16 + pit * 16 + pit * 4, y: canvas.height-image.height*2}),
+    //     new Fire({ x: image.width * 17 + pit * 17 + pit * 6, y: canvas.height-image.height*3}),
+    // ]
     fires = [
-        new Fire({x: image.width/2, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width/2 * 2 + pit, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width * 2 + pit*2, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width * 3 + pit * 3, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width * 4 + pit * 4, y: canvas.height-image.height*3}),
-        new Fire({ x: image.width * 5 + pit * 5, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width * 6 + pit * 6 + pit, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width * 7 + pit * 7 + pit * 2, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width * 8 + pit * 8 + pit * 3, y: canvas.height-image.height*3}),
-        new Fire({ x: image.width * 9 + pit * 9 + pit * 4, y: canvas.height-image.height}),
-        new Fire({ x: image.width * 10 + pit * 10 + pit * 4, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width * 11 + pit * 11 + pit * 4, y: canvas.height-image.height}),
-        new Fire({ x: image.width * 12 + pit * 12 + pit * 4, y: canvas.height-image.height}),
-        new Fire({ x: image.width * 13 + pit * 13 + pit * 3, y: canvas.height-image.height}),
-        new Fire({ x: image.width * 14 + pit * 14 + pit * 4, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width * 15 + pit * 15 + pit * 5, y: canvas.height-image.height*3}),
-        new Fire({ x: image.width * 16 + pit * 16 + pit * 4, y: canvas.height-image.height*2}),
-        new Fire({ x: image.width * 17 + pit * 17 + pit * 6, y: canvas.height-image.height*3}),
-    ]
+        new Fire({ x: 0 + image.width / 2, y: canvas.height - image.height * 2 }),
+        new Fire({ x: image.width + image.width / 2, y: canvas.height - image.height * 2 }),
+        new Fire({ x: image.width * 2 + pit + image.width / 2, y: canvas.height - image.height * 2 }),
+        new Fire({ x: image.width * 3 + pit * 2 + image.width / 2, y: canvas.height - image.height * 3}),
+        new Fire({ x: image.width * 4 + pit * 3 + image.width / 2, y: canvas.height - image.height * 4}),
+        new Fire({ x: image.width * 5 + pit * 4 + image.width / 2, y: canvas.height - image.height * 5}),
+        new Fire({ x: image.width * 6 + pit * 5 + pit + image.width / 2, y: canvas.height - image.height * 3 }),
+        new Fire({ x: image.width * 7 + pit * 6 + pit * 2 + image.width / 2, y: canvas.height - image.height * 3 }),
+        new Fire({ x: image.width * 8 + pit * 7 + pit * 3 + image.width / 2, y: canvas.height - image.height  }),
+        new Fire({ x: image.width * 9 + pit * 8 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
+        new Fire({ x: image.width * 10 + pit * 9 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
+        new Fire({ x: image.width * 11 + pit * 10 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
+        new Fire({ x: image.width * 12 + pit * 11 + pit * 4 + image.width / 2, y: canvas.height - image.height }),
+        new Fire({ x: image.width * 13 + pit * 12 + pit * 3 + image.width / 2, y: canvas.height - image.height }),
+        new Fire({ x: image.width * 14 + pit * 13 + pit * 3 + image.width / 2, y: canvas.height - image.height * 2 }),
+        new Fire({ x: image.width * 15 + pit * 14 + pit * 3 + image.width / 2, y: canvas.height - image.height * 3 }),
+        new Fire({ x: image.width * 16 + pit * 15 + pit * 3 + image.width / 2, y: canvas.height - image.height * 2 }),
+        new Fire({ x: image.width * 17 + pit * 16 + pit * 3 + image.width / 2, y: canvas.height - image.height * 3 }),
+    ];
 
     scrollOffset = 0;
 }
@@ -209,23 +235,18 @@ image.onload = () => {
     }
 };
 
-// Display "Victory" message
-function displayYouWin() {
-    ctx.fillStyle = "Green";
-    ctx.font = "bold 70px Arial";
-    ctx.fillText("Victory", canvas.width / 2 - 100, canvas.height / 2);
-    gameOver = false
-    victory = true
-}
+
+
+
 
 // Main game loop
 function animate() {
     if(gameOver){
-        displayGameOver()
+        displayGameOver(ctx)
         return
     }
     if(victory){
-        displayYouWin()
+        displayYouWin(ctx, gameOver, victory);
         return
     }
     if(paused){
@@ -429,7 +450,7 @@ function animate() {
 
         // Win condition
         if (scrollOffset > deadEndDistance) {
-            displayYouWin(); // Call the function to display "You Win" message
+            displayYouWin(ctx, gameOver, victory);
             return; // Stop further animation
         }
 
@@ -449,23 +470,10 @@ function animate() {
         ctx.fillText(`Survival Score: ${score}`, canvas.width - 200, 50);
 
         // Show Guidance
-        if (showGuidance) {
-            ctx.fillStyle = "white";
-            ctx.font = "14px Arial";
-            ctx.fillText("Use keys to Play:", 20, 80);
-            ctx.fillText("A: Move Left", 30, 100);
-            ctx.fillText("D: Move Right", 30, 120);
-            ctx.fillText("Space: Jump", 30, 140);
-            ctx.fillText("Enter: Fire", 30, 160);
-            ctx.fillText("P: Pause", 30, 180);
-            ctx.fillText("Press 'G' to toggle guidance", 20, 220);
-        }
+        showGuidanceText(ctx, showGuidance);
         // Drone Incoming message
-        if (showDroneMessage) {
-            ctx.fillStyle = "White";
-            ctx.font = "25px Arial";
-            ctx.fillText("Friendly fighter drone is on the way...", canvas.width / 2 - 200, canvas.height / 2 - 50);
-        }
+        showDroneMessageText(ctx, showDroneMessage);
+       
 
     } else {
         player.update()
@@ -541,18 +549,12 @@ function loseLife() {
     }
 }
 
-// Display "Game Over" message
-function displayGameOver() {
-    ctx.fillStyle = "White";
-    ctx.font = "bold 50px Arial";
-    ctx.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);  // Display game over message
-}
+
 
 
 // Keypress events
 window.addEventListener("keydown", (event) => {
     switch (event.key) {
-
         case "a": 
         case "A":{
             keys.a.pressed = true;
@@ -572,7 +574,7 @@ window.addEventListener("keydown", (event) => {
             if(player.velocity.y != 0){
                 break
             }
-            player.velocity.y = -12;
+            player.velocity.y = -14;
             console.log(event.key);
             break;
         }
