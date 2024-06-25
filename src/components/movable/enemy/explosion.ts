@@ -1,63 +1,3 @@
-// import { ctx } from "../../../main"; 
-// import { Position } from "../player/Player";
-// import explosionImage from "/images/explosion.png";
-
-// let explosionImg = new Image();
-// explosionImg.src = explosionImage;
-
-// export interface Velocity {
-//     velocityX: number;
-//     velocityY: number;
-// }
-
-// export default class Explosion {
-//     position: Position;
-//     width: number;
-//     height: number;
-//     frame: number
-//     currentCroppWidth: number
-//     currentCropHeight:number
-//     cropWidth: number
-//     cropHeight: number
-//     isFinished: boolean
-//     constructor(position: Position) {
-//         this.position = position;
-//         // this.velocity = velocity;
-//         this.frame = 0
-//         this.currentCroppWidth = 0
-//         this.currentCropHeight = 0
-//         this.cropWidth = 192
-//         this.cropHeight = 159
-//         this.width = 150
-//         this.height = 150
-//         this.isFinished = false
-//     }
-
-//     draw() {
-//         ctx.beginPath();
-//         ctx.drawImage(explosionImg,this.currentCroppWidth,this.currentCropHeight,this.cropWidth,this.cropHeight,this.position.x,this.position.y,this.width,this.height)
-//         ctx.closePath();
-//     }
-
-//     update() {
-
-//         this.frame++
-//         if(this.frame < 8){
-//             this.currentCroppWidth = 192 * this.frame
-//         }
-//         else{
-//             this.isFinished = true
-//         }
-//         this.draw();
-        
-//         // this.position.x += this.velocity.velocityX;
-//         // this.position.y += this.velocity.velocityY;
-//     }
-//     getPosition(): Position {
-//         return this.position;
-//     }
-// }
-
 import { ctx } from "../../../main";
 import { Position } from "../player/Player";
 import explosionImage from "/images/explosion.png";
@@ -102,7 +42,7 @@ export default class Explosion {
     update() {
         this.frame++;
         if (this.frame < 8) {
-            this.currentCroppWidth = 192 * this.frame;
+            this.currentCroppWidth = 195 * this.frame;
         } else {
             this.isFinished = true;
         }

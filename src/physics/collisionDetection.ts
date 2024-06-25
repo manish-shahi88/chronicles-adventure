@@ -3,6 +3,7 @@ import EnemyShooter from "../components/movable/enemy/enemyShooter";
 import Stone from "../components/movable/enemy/stone";
 import Player from "../components/movable/player/Player";
 import Bullet from "../components/movable/player/bullet";
+import DroneBullet from "../components/movable/player/droneBullets";
 import Platform from "../components/nonMovable/Platforms";
 import Fire from "../components/nonMovable/fire";
 // import Enemy from "../components/nonMovable/fire";
@@ -40,6 +41,14 @@ export function detectBulletCollision(bullet: Bullet, enemy: Enemy): boolean {
         bullet.position.y + bullet.height > enemy.position.y;
 }
 
+//detect collion of droneBullet with enemy
+export function detectDroneBulletToEnemyCollision(droneBullet: DroneBullet, enemy: Enemy): boolean {
+    return droneBullet.position.x < enemy.position.x + enemy.width / 2 &&
+        droneBullet.position.x + droneBullet.width / 2 > enemy.position.x &&
+        droneBullet.position.y < enemy.position.y + enemy.height &&
+        droneBullet.position.y + droneBullet.height > enemy.position.y;
+}
+
 //detect collion of bullet with enemyShooter
 export function detectBulletWithEnemyShooterCollision(bullet: Bullet, enemyShooter: EnemyShooter): boolean {
     return bullet.position.x < enemyShooter.position.x + enemyShooter.width / 2 &&
@@ -47,6 +56,14 @@ export function detectBulletWithEnemyShooterCollision(bullet: Bullet, enemyShoot
         bullet.position.y < enemyShooter.position.y + enemyShooter.height &&
         bullet.position.y + bullet.height > enemyShooter.position.y;
 }
+//detect collion of droneBullet with enemyShooter
+export function detectDroneBulletWithEnemyShooterCollision(droneBullet: DroneBullet, enemyShooter: EnemyShooter): boolean {
+    return droneBullet.position.x < enemyShooter.position.x + enemyShooter.width / 2 &&
+        droneBullet.position.x + droneBullet.width / 2 > enemyShooter.position.x &&
+        droneBullet.position.y < enemyShooter.position.y + enemyShooter.height &&
+        droneBullet.position.y + droneBullet.height > enemyShooter.position.y;
+}
+
 
 //detect collion of player with Stone 
 export function detectStoneCollision(stone: Stone, player: Player): boolean {
@@ -56,12 +73,19 @@ export function detectStoneCollision(stone: Stone, player: Player): boolean {
         stone.position.y + stone.height > player.position.y;
 }
 
-//detect collion of bullet with enemyShooter
+//detect collion of bullet with stone
 export function detectBulletToStoneCollision(bullet: Bullet, stone: Stone): boolean {
     return bullet.position.x < stone.position.x + stone.width / 2 &&
         bullet.position.x + bullet.width / 2 > stone.position.x &&
         bullet.position.y < stone.position.y + stone.height &&
         bullet.position.y + bullet.height > stone.position.y;
+}
+//detect collion of bullet with stone
+export function detectDroneBulletToStoneCollision(droneBullet: Bullet, stone: Stone): boolean {
+    return droneBullet.position.x < stone.position.x + stone.width / 2 &&
+        droneBullet.position.x + droneBullet.width / 2 > stone.position.x &&
+        droneBullet.position.y < stone.position.y + stone.height &&
+        droneBullet.position.y + droneBullet.height > stone.position.y;
 }
 
 

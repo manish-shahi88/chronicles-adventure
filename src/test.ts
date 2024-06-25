@@ -1,12 +1,15 @@
+// // editor mode
+
 // import platform from "/images/platform.png";
 // import background from "/images/background.png";
 // import tree from "/images/tree.png";
 
-// import zombieSoundSrc from "/sounds/zombieSound.mp3";
-// import backgroundMusicSrc from "/sounds/backgroundMusic.mp3";
-// import playerDeathSoundSrc from "/sounds/soldierScream.mp3";
-// import deathSoundSrc from "/sounds/deathSound.mp3";
-// import bulletSoundSrc from "/sounds/gunfire.mp3";
+// import zombieSoundSrc from "/sounds/zombieSound.mp3"
+// import backgroundMusicSrc from "/sounds/backgroundMusic.mp3"
+// import playerDeathSoundSrc from "/sounds/soldierScream.mp3"
+// import deathSoundSrc from "/sounds/deathSound.mp3"
+// import bulletSoundSrc from "/sounds/gunfire.mp3"
+// import explosionSrc from "/sounds/explosion.mp3"
 
 // import Platform from "./components/nonMovable/Platforms";
 // import Player from "./components/movable/player/Player";
@@ -18,6 +21,8 @@
 // import Stone from "./components/movable/enemy/stone";
 // import Fire from "./components/nonMovable/fire";
 // import { detectBulletCollision, detectBulletToStoneCollision, detectBulletWithEnemyShooterCollision, detectCollision, detectCollisionWithEnemy, detectCollisionWithEnemyShooters, detectPlayerEnemyCollision, detectPlayerEnemyShooterCollision, detectPlayerFireCollision, detectStoneCollision } from "./physics/collisionDetection";
+// import Explosion from "./components/movable/enemy/explosion";
+
 
 // // Canvas setup
 // export const canvas = document.querySelector("canvas") as HTMLCanvasElement;
@@ -37,36 +42,41 @@
 // treeImg.src = tree;
 
 // // Audio assets
-// const zombieSound = new Audio(zombieSoundSrc);
-// zombieSound.volume = 0.4;
-// const backgroundMusic = new Audio(backgroundMusicSrc);
-// backgroundMusic.volume = 0.4;
-// const playerDeathSound = new Audio(playerDeathSoundSrc);
-// playerDeathSound.volume = 0.9;
-// backgroundMusic.loop = true;
+// const zombieSound = new Audio(zombieSoundSrc)
+// zombieSound.volume = 0.4
+// const backgroundMusic = new Audio(backgroundMusicSrc)
+// backgroundMusic.volume = 0.4
+// const playerDeathSound = new Audio(playerDeathSoundSrc)
+// playerDeathSound.volume = 0.9
+// backgroundMusic.loop = true
 
 // export let player: Player;
-// export let enemies: Enemy[] = [];
-// export let enemyShooters: EnemyShooter[] = [];
+// export let enemies: Enemy[] = []
+// export let enemyShooters: EnemyShooter[] = []
 
 // export let bullets: Bullet[] = [];
-// export let stones: Stone[] = [];
+// export let stones: Stone[] = []
 // export let platforms: Platform[] = [];
 // let genericObjects: GenericObject[] = [];
-// export let fires: Fire[] = [];
+// export let fires: Fire[] = []
+// export let explosions: Explosion[] = []
 // export const keys = {
-//     d: { pressed: false },
-//     a: { pressed: false },
-//     shoot: { pressed: false },
-//     jump: { pressed: false }
+//     d: {pressed: false},
+//     a: {pressed: false},
+//     shoot: {pressed: false},
+//     jump: {pressed: false
+// }
 // };
 
 // let scrollOffset = 0;
 // let bulletFired = false;
-// let intervalsSet = false;
-// let lives = 5;
-// let gameOver = false;
-// let paused = false; // Add paused state
+// let intervalsSet = false
+// let lives = 5
+// let gameOver = false
+// let paused = false
+// let victory = false
+// let showGuidance = true;
+// let score = 0;
 
 // // Editor mode settings
 // let editorMode = window.location.pathname.includes("levelEditor.html");
@@ -79,9 +89,9 @@
 //         // Initialize editor-specific settings if needed
 //     }
 
-//     if (lives <= 0) {
-//         gameOver = true;
-//         return;
+//     if(lives <= 0){
+//         gameOver = true
+//         return
 //     }
 //     player = new Player();
 
@@ -91,7 +101,7 @@
 //         new Platform({ x: image.width, y: 500, image }),
 //         new Platform({ x: image.width * 2 + pit, y: 500, image }),
 //         new Platform({ x: image.width * 3 + pit * 2, y: 400, image }),
-//         new Platform({ x: image.width * 4 + pit * 3, y: 300, image }), //
+//         new Platform({ x: image.width * 4 + pit * 3, y: 300, image }),//
 //         new Platform({ x: image.width * 5 + pit * 4, y: 200, image }),
 //         new Platform({ x: image.width * 6 + pit * 5 + pit, y: 300, image }),
 //         new Platform({ x: image.width * 7 + pit * 6 + pit * 2, y: 300, image }),
@@ -109,6 +119,8 @@
 //         new Platform({ x: image.width * 19 + pit * 18 + pit * 4, y: 500, image }),
 //         new Platform({ x: image.width * 20 + pit * 19 + pit * 5, y: 500, image }),
 //         new Platform({ x: image.width * 21 + pit * 20 + pit * 6, y: 500, image })
+
+
 //     ];
 
 //     // Create Static objects
@@ -133,53 +145,56 @@
 //         new GenericObject({ x: 300 + treeSpace * 20, y: 100, image: treeImg }),
 //         new GenericObject({ x: 300 + treeSpace * 21, y: 100, image: treeImg }),
 //         new GenericObject({ x: 300 + treeSpace * 22, y: 100, image: treeImg }),
+
 //     ];
 
 //     // Create Fires
 //     fires = [
-//         new Fire({ x: image.width / 2, y: 400 }),
-//         new Fire({ x: image.width / 2 * 2 + pit, y: 400 }),
-//         new Fire({ x: image.width * 2 + pit * 2, y: 400 }),
-//         new Fire({ x: image.width * 3 + pit * 3, y: 300 }),
-//         new Fire({ x: image.width * 4 + pit * 4, y: 200 }),
-//         new Fire({ x: image.width * 5 + pit * 5, y: 100 }),
-//         new Fire({ x: image.width * 6 + pit * 6 + pit, y: 200 }),
-//         new Fire({ x: image.width * 7 + pit * 7 + pit * 2, y: 200 }),
-//         new Fire({ x: image.width * 8 + pit * 8 + pit * 3, y: 300 }),
-//         new Fire({ x: image.width * 9 + pit * 9 + pit * 4, y: 400 }),
-//         new Fire({ x: image.width * 10 + pit * 10 + pit * 4, y: 300 }),
-//         new Fire({ x: image.width * 11 + pit * 11 + pit * 4, y: 400 }),
-//         new Fire({ x: image.width * 12 + pit * 12 + pit * 4, y: 400 }),
-//         new Fire({ x: image.width * 13 + pit * 13 + pit * 3, y: 400 }),
-//         new Fire({ x: image.width * 14 + pit * 14 + pit * 4, y: 300 }),
-//         new Fire({ x: image.width * 15 + pit * 15 + pit * 5, y: 200 }),
-//         new Fire({ x: image.width * 16 + pit * 16 + pit * 4, y: 300 }),
-//         new Fire({ x: image.width * 17 + pit * 17 + pit * 6, y: 200 }),
-//     ];
+//         new Fire({x: image.width/2, y: 400}),
+//         new Fire({ x: image.width/2 * 2 + pit, y: 400}),
+//         new Fire({ x: image.width * 2 + pit*2, y: 400}),
+//         new Fire({ x: image.width * 3 + pit * 3, y: 300}),
+//         new Fire({ x: image.width * 4 + pit * 4, y: 200}),
+//         new Fire({ x: image.width * 5 + pit * 5, y: 100}),
+//         new Fire({ x: image.width * 6 + pit * 6 + pit, y: 200}),
+//         new Fire({ x: image.width * 7 + pit * 7 + pit * 2, y: 200}),
+//         new Fire({ x: image.width * 8 + pit * 8 + pit * 3, y: 300}),
+//         new Fire({ x: image.width * 9 + pit * 9 + pit * 4, y: 400}),
+//         new Fire({ x: image.width * 10 + pit * 10 + pit * 4, y: 300}),
+//         new Fire({ x: image.width * 11 + pit * 11 + pit * 4, y: 400}),
+//         new Fire({ x: image.width * 12 + pit * 12 + pit * 4, y: 400}),
+//         new Fire({ x: image.width * 13 + pit * 13 + pit * 3, y: 400}),
+//         new Fire({ x: image.width * 14 + pit * 14 + pit * 4, y: 300}),
+//         new Fire({ x: image.width * 15 + pit * 15 + pit * 5, y: 200}),
+//         new Fire({ x: image.width * 16 + pit * 16 + pit * 4, y: 300}),
+//         new Fire({ x: image.width * 17 + pit * 17 + pit * 6, y: 200}),
+//     ]
 
 //     scrollOffset = 0;
 // }
+
 
 // // Start the game loop once the image is loaded
 // image.onload = () => {
 //     init();
 //     animate();
 
-//     if (!intervalsSet) {
-//         intervalsSet = true;
+//     if(!intervalsSet){
+//         intervalsSet = true
 //         //random enemy generation at every 2 seconds
 //         setInterval(() => {
-//             if (!gameOver && !paused) {
-//                 enemies.push(new Enemy({ x: player.position.x - enemySpawnX, y: player.position.y - enemySpawnY }));
+//             if(!gameOver && !paused){
+//                 enemies.push(new Enemy({ x: player.position.x - enemySpawnX, y: player.position.y-enemySpawnY }));
 //             }
-//         }, 500);
+//         }, 500)
 
 //         //random enemy generation at every 2 seconds
 //         setInterval(() => {
-//             if (!gameOver && !paused) {
-//                 enemyShooters.push(new EnemyShooter({ x: player.position.x + enemyShooterSpawnX, y: player.position.y - enemySpawnY }));
+//             if(!gameOver && !paused){
+//                 enemyShooters.push(new EnemyShooter({ x: player.position.x + enemyShooterSpawnX, y: player.position.y-enemySpawnY}));
+
 //             }
-//         }, 2000);
+//         }, 2000)
 //     }
 // };
 
@@ -188,18 +203,28 @@
 //     ctx.fillStyle = "Green";
 //     ctx.font = "bold 70px Arial";
 //     ctx.fillText("Victory", canvas.width / 2 - 100, canvas.height / 2);
+//     gameOver = false
+//     victory = true
 // }
 
 // // Main game loop
+
+
 // function animate() {
-//     if (gameOver || paused) {
-//         if (paused) {
-//             ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-//             ctx.fillRect(0, 0, canvas.width, canvas.height);
-//             ctx.fillStyle = "white";
-//             ctx.font = "bold 70px Arial";
-//             ctx.fillText("Paused", canvas.width / 2 - 100, canvas.height / 2);
-//         }
+//     if (gameOver) {
+//         displayGameOver();
+//         return;
+//     }
+//     if (victory) {
+//         displayYouWin();
+//         return;
+//     }
+//     if (paused) {
+//         ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+//         ctx.fillRect(0, 0, canvas.width, canvas.height);
+//         ctx.fillStyle = "white";
+//         ctx.font = "bold 70px Arial";
+//         ctx.fillText("Paused", canvas.width / 2 - 100, canvas.height / 2);
 //         return;
 //     }
 //     window.requestAnimationFrame(animate);
@@ -208,6 +233,10 @@
 //     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 //     backgroundMusic.play();
+
+//     // Apply scroll offset for rendering
+//     ctx.save();
+//     ctx.translate(-scrollOffset, 0);
 
 //     // Draw background elements
 //     genericObjects.forEach(genericObject => {
@@ -288,6 +317,7 @@
 //                     deathSound.play();
 //                     enemies.splice(enemyIndex, 1);
 //                     bullets.splice(bulletIndex, 1);
+//                     score += 10;
 //                 }
 //             });
 //         });
@@ -301,17 +331,30 @@
 //                     deathSound.play();
 //                     enemyShooters.splice(enemyShooterIndex, 1);
 //                     bullets.splice(bulletIndex, 1);
+//                     score += 10;
 //                 }
 //             });
 //         });
 
+//         explosions.forEach((explosion) => {
+//             explosion.update();
+//         });
+
+//         // Remove finished explosions
+//         explosions = explosions.filter(explosion => !explosion.isFinished);
+
 //         // Handle stone collision with player
 //         bullets.forEach((bullet, bulletIndex) => {
 //             bullet.update();
+
 //             stones.forEach((stone, stoneIndex) => {
 //                 if (detectBulletToStoneCollision(bullet, stone)) {
-//                     const deathSound = new Audio(deathSoundSrc);
-//                     deathSound.play();
+//                     const explosionSound = new Audio(explosionSrc);
+//                     explosionSound.play();
+
+//                     const explosion = new Explosion({ x: stone.position.x, y: stone.position.y });
+//                     explosions.push(explosion);
+
 //                     stones.splice(stoneIndex, 1);
 //                     bullets.splice(bulletIndex, 1);
 //                 }
@@ -321,6 +364,7 @@
 //         // Handle stone collision with player
 //         stones.forEach((stone) => {
 //             stone.update();
+
 //             if (detectStoneCollision(stone, player)) {
 //                 playerDeathSound.play();
 //                 console.log("you lose");
@@ -416,13 +460,33 @@
 //             loseLife();
 //         }
 
+//         // Display lives of player
 //         ctx.fillStyle = "white";
 //         ctx.font = "20px Arial";
-//         ctx.fillText(`Lives: ${lives}`, 20, 50); // Display lives
+//         ctx.fillText(`Lives: ${lives}`, 20, 50);
+
+//         // Display score
+//         ctx.fillText(`Survival Score: ${score}`, canvas.width - 200, 50);
+
+//         // Show Guidance
+//         if (showGuidance) {
+//             ctx.fillStyle = "white";
+//             ctx.font = "14px Arial";
+//             ctx.fillText("Use keys to Play:", 20, 80);
+//             ctx.fillText("A: Move Left", 30, 100);
+//             ctx.fillText("D: Move Right", 30, 120);
+//             ctx.fillText("Space: Jump", 30, 140);
+//             ctx.fillText("Enter: Fire", 30, 160);
+//             ctx.fillText("P: Pause", 30, 180);
+//             ctx.fillText("Press 'G' to toggle guidance", 20, 220);
+//         }
+
 //     } else {
 //         // Draw player in editor mode for reference
-//         player.draw();
+//         // player.draw();
 //     }
+
+//     ctx.restore(); // Restore the canvas state after applying the scroll offset
 // }
 
 // // Reduce player's life and reset the game if there are lives left
@@ -442,23 +506,30 @@
 //     ctx.fillText("Game Over", canvas.width / 2 - 100, canvas.height / 2);  // Display game over message
 // }
 
+
 // // Keypress events
 // window.addEventListener("keydown", (event) => {
 //     switch (event.key) {
-//         case "a":
-//         case "A": {
+
+//         case "a": 
+//         case "A":{
 //             keys.a.pressed = true;
-//             player.currentSprite = player.sprites.runLeft.left;
+//             player.currentSprite = player.sprites.runLeft.left
 //             break;
 //         }
 //         case "d":
-//         case "D": {
+//         case "D":
+//             {
 //             keys.d.pressed = true;
-//             player.currentSprite = player.sprites.run.right;
+//             player.currentSprite = player.sprites.run.right
 //             break;
 //         }
+
 //         case " ": {
-//             keys.jump.pressed = true;
+//             keys.jump.pressed = true
+//             if(player.velocity.y != 0){
+//                 break
+//             }
 //             player.velocity.y = -12;
 //             console.log(event.key);
 //             break;
@@ -468,12 +539,12 @@
 //                 keys.shoot.pressed = true;
 //                 bulletFired = true;
 //                 const bulletSound = new Audio(bulletSoundSrc);
-//                 bulletSound.volume = 0.4;
+//                 bulletSound.volume = 0.2
 //                 bulletSound.play();
 //                 if (player.currentSprite === player.sprites.runLeft.left) {
-//                     bullets.push(new Bullet({ x: player.position.x - player.width, y: player.position.y }, { velocityX: -10, velocityY: 0 }, 100, 100));
+//                     bullets.push(new Bullet({ x: player.position.x - player.width, y: player.position.y }, { velocityX: -10, velocityY: 0 }, 100, 100))
 //                 } else if (player.currentSprite === player.sprites.run.right) {
-//                     bullets.push(new Bullet({ x: player.position.x + player.width, y: player.position.y }, { velocityX: 10, velocityY: 0 }, 100, 100));
+//                     bullets.push(new Bullet({ x: player.position.x + player.width, y: player.position.y }, { velocityX: 10, velocityY: 0 }, 100, 100))
 //                 }
 //             }
 //             break;
@@ -486,6 +557,11 @@
 //             }
 //             break;
 //         }
+//         case "g":
+//         case "G": {
+//             showGuidance = !showGuidance; // Toggle guidance visibility
+//             break;
+//         }
 //     }
 // });
 
@@ -493,16 +569,17 @@
 //     switch (event.key) {
 //         case "a": {
 //             keys.a.pressed = false;
-//             player.currentCroppWidth = 290;
-//             player.currentCropHeight = 65;
+//             player.currentCroppWidth = 290
+//             player.currentCropHeight = 65
 //             break;
 //         }
 //         case "d": {
 //             keys.d.pressed = false;
-//             player.currentCroppWidth = 290;
-//             player.currentCropHeight = 65;
+//             player.currentCroppWidth = 290
+//             player.currentCropHeight = 65
 //             break;
 //         }
+
 //         case "Enter": {
 //             keys.shoot.pressed = false;
 //             bulletFired = false;
@@ -510,6 +587,11 @@
 //         }
 //     }
 // });
+
+
+
+
+// const scrollSpeed = 20; // Speed of horizontal scrolling in editor mode
 
 // // Editor mode specific event listeners
 // if (editorMode) {
@@ -533,7 +615,7 @@
 
 //     canvas.addEventListener('mousedown', (e) => {
 //         if (editorMode) {
-//             const mouseX = e.offsetX;
+//             const mouseX = e.offsetX + scrollOffset;
 //             const mouseY = e.offsetY;
 //             draggingObject = findObjectAtPosition(mouseX, mouseY);
 //             if (!draggingObject) {
@@ -544,7 +626,7 @@
 
 //     canvas.addEventListener('mousemove', (e) => {
 //         if (editorMode && draggingObject) {
-//             const mouseX = e.offsetX;
+//             const mouseX = e.offsetX + scrollOffset;
 //             const mouseY = e.offsetY;
 //             draggingObject.position.x = mouseX;
 //             draggingObject.position.y = mouseY;
@@ -554,6 +636,22 @@
 //     canvas.addEventListener('mouseup', () => {
 //         if (editorMode) {
 //             draggingObject = null;
+//         }
+//     });
+
+//     // Allow scrolling with arrow keys in editor mode
+//     window.addEventListener("keydown", (event) => {
+//         if (editorMode) {
+//             switch (event.key) {
+//                 case "ArrowRight":
+//                     scrollOffset += scrollSpeed;
+//                     break;
+//                 case "ArrowLeft":
+//                     scrollOffset -= scrollSpeed;
+//                     if (scrollOffset < 0) scrollOffset = 0;
+//                     break;
+//             }
+//             updateCanvasPosition();
 //         }
 //     });
 // }
@@ -574,9 +672,14 @@
 //     return platforms.find(platform => x >= platform.position.x && x <= platform.position.x + platform.width &&
 //         y >= platform.position.y && y <= platform.position.y + platform.height) ||
 //         enemies.find(enemy => x >= enemy.position.x && x <= enemy.position.x + enemy.width &&
-//             y >= enemy.position.y && y <= enemy.position.y + enemy.height) ||
+//         y >= enemy.position.y && y <= enemy.position.y + enemy.height) ||
 //         fires.find(fire => x >= fire.position.x && x <= fire.position.x + fire.width &&
-//             y >= fire.position.y && y <= fire.position.y + fire.height);
+//         y >= fire.position.y && y <= fire.position.y + fire.height);
+// }
+
+// // Update positions of all objects based on scrollOffset for rendering
+// function updateCanvasPosition() {
+//     ctx.setTransform(1, 0, 0, 1, -scrollOffset, 0); // Adjust canvas transformation for horizontal scrolling
 // }
 
 // // Save the current level data
@@ -615,3 +718,11 @@
 //     enemies = levelData.enemies.map((enemyData: any) => new Enemy({ x: enemyData.x, y: enemyData.y }));
 //     fires = levelData.fires.map((fireData: any) => new Fire({ x: fireData.x, y: fireData.y }));
 // }
+
+
+
+// // other imports and game setup code here...
+
+// // if (editorMode) {
+// //     setupEditorControls(canvas, platforms, enemies, fires, Platform, Enemy, Fire, image);
+// // }

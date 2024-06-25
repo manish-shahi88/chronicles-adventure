@@ -20,6 +20,8 @@ import Stone from "./components/movable/enemy/stone";
 import Fire from "./components/nonMovable/fire";
 import { detectBulletCollision, detectBulletToStoneCollision, detectBulletWithEnemyShooterCollision, detectCollision, detectCollisionWithEnemy, detectCollisionWithEnemyShooters, detectPlayerEnemyCollision, detectPlayerEnemyShooterCollision, detectPlayerFireCollision, detectStoneCollision } from "./physics/collisionDetection";
 import Explosion from "./components/movable/enemy/explosion";
+import Drone from "./components/movable/player/fighterDrone";
+// import DroneBullet from "./components/movable/player/droneBullets";
 
 
 // Canvas setup
@@ -58,6 +60,8 @@ export let platforms: Platform[] = [];
 let genericObjects: GenericObject[] = [];
 export let fires: Fire[] = []
 export let explosions: Explosion[] = []
+export let drone: Drone
+
 export const keys = {
     d: {pressed: false},
     a: {pressed: false},
@@ -76,6 +80,11 @@ let victory = false
 let showGuidance = true;
 let score = 0;
 
+let droneUpdateStart = false;
+let droneUpdateTimeout = false;
+let showDroneMessage = false;
+let droneMessageDisplayed = false;
+
 // Editor mode settings
 let editorMode = window.location.pathname.includes("levelEditor.html");
 let selectedObjectType: 'platform' | 'enemy' | 'fire' = 'platform';
@@ -92,6 +101,12 @@ function init() {
         return
     }
     player = new Player();
+    drone = new Drone(
+        { x: player.position.x, y: player.position.y - 100 },
+        { velocityX: 0, velocityY: 0 },
+        50, // Drone width
+        50  // Drone height
+    );
 
     // Create Platforms
     platforms = [
@@ -184,7 +199,7 @@ image.onload = () => {
             if(!gameOver && !paused){
                 enemies.push(new Enemy({ x: player.position.x - enemySpawnX, y: player.position.y-enemySpawnY }));
             }
-        }, 500)
+        }, 1000)
 
         //random enemy generation at every 2 seconds
         setInterval(() => {
@@ -192,7 +207,7 @@ image.onload = () => {
                 enemyShooters.push(new EnemyShooter({ x: player.position.x + enemyShooterSpawnX, y: player.position.y-enemySpawnY}));
 
             }
-        }, 2000)
+        },1000)
     }
 };
 
@@ -230,7 +245,7 @@ function animate() {
 
     backgroundMusic.play()
 
-    // Draw backgroun elements
+    // Draw background elements
     genericObjects.forEach(genericObject => {
         genericObject.draw();
     });
@@ -248,58 +263,25 @@ function animate() {
 
     if (!editorMode) {
         player.update();
+        // drone.update()
+
+
+        if (player.position.x > 500 && !droneUpdateStart) { // Change 1000 to your desired x position
+            droneUpdateStart = true;
+            showDroneMessage = true
+            setTimeout(() => {
+                droneUpdateTimeout = true;
+                showDroneMessage = false
+            }, 5000); // 5000 ms delay (5 seconds)
+        }
+
+        // Update drone if conditions are met
+        if (droneUpdateStart && droneUpdateTimeout) {
+            drone.update();
+        }
 
         // Handle player movement
-        player.velocity.x = 0;
-        if ((keys.d.pressed && player.position.x < 500) || (keys.d.pressed && scrollOffset === deadEndDistance && player.position.x < deadEndDistance)) {
-            player.velocity.x = playerSpeed;
-        } else if ((keys.a.pressed && player.position.x > 100) || (keys.a.pressed && scrollOffset === 0 && player.position.x > 0)) {
-            player.velocity.x = -playerSpeed;
-        } else {
-            player.velocity.x = 0;
-
-            if (keys.d.pressed && scrollOffset < deadEndDistance) {
-                scrollOffset += playerSpeed;
-                platforms.forEach(platform => {
-                    platform.position.x -= playerSpeed;
-                });
-                genericObjects.forEach(genericObject => {
-                    genericObject.position.x -= genericObjectSpeed;
-                });
-                enemies.forEach(enemy => {
-                    enemy.position.x -= playerSpeed;
-                });
-                enemyShooters.forEach(enemyShooter => {
-                    enemyShooter.position.x -= playerSpeed;
-                });
-                stones.forEach(stone => {
-                    stone.position.x -= playerSpeed;
-                });
-                fires.forEach(fire => {
-                    fire.position.x -= playerSpeed;
-                });
-            } else if (keys.a.pressed && scrollOffset > 0) {
-                scrollOffset -= playerSpeed;
-                platforms.forEach(platform => {
-                    platform.position.x += playerSpeed;
-                });
-                genericObjects.forEach(genericObject => {
-                    genericObject.position.x += genericObjectSpeed;
-                });
-                enemies.forEach(enemy => {
-                    enemy.position.x += playerSpeed;
-                });
-                enemyShooters.forEach(enemyShooter => {
-                    enemyShooter.position.x += playerSpeed;
-                });
-                stones.forEach(stone => {
-                    stone.position.x += playerSpeed;
-                });
-                fires.forEach(fire => {
-                    fire.position.x += playerSpeed;
-                });
-            }
-        }
+        handlePlayerMovement()
 
         // Handle bullet-enemy collision
         bullets.forEach((bullet, bulletIndex) => {
@@ -314,6 +296,10 @@ function animate() {
                 }
             });
         });
+
+
+        
+
 
 
         // Handle bullet-stone collision
@@ -331,6 +317,7 @@ function animate() {
         });
 
         
+        // Rock explosion effect
         explosions.forEach((explosion) => {
             explosion.update()
         })
@@ -475,11 +462,75 @@ function animate() {
             ctx.fillText("P: Pause", 30, 180);
             ctx.fillText("Press 'G' to toggle guidance", 20, 220);
         }
+        // Drone Incoming message
+        if (showDroneMessage) {
+            ctx.fillStyle = "White";
+            ctx.font = "25px Arial";
+            ctx.fillText("Friendly fighter drone is on the way...", canvas.width / 2 - 200, canvas.height / 2 - 50);
+        }
 
     } else {
-        // Draw player in editor mode for reference
-        // player.draw();
+        player.update()
+        handlePlayerMovement()
+        platforms.forEach(platform => {
+            if (detectCollision(player, platform)) {
+                player.velocity.y = 0;
+            }
+        });
     }
+}
+
+function handlePlayerMovement(){
+    player.velocity.x = 0;
+        if ((keys.d.pressed && player.position.x < 500) || (keys.d.pressed && scrollOffset === deadEndDistance && player.position.x < deadEndDistance)) {
+            player.velocity.x = playerSpeed;
+        } else if ((keys.a.pressed && player.position.x > 100) || (keys.a.pressed && scrollOffset === 0 && player.position.x > 0)) {
+            player.velocity.x = -playerSpeed;
+        } else {
+            player.velocity.x = 0;
+
+            if (keys.d.pressed && scrollOffset < deadEndDistance) {
+                scrollOffset += playerSpeed;
+                platforms.forEach(platform => {
+                    platform.position.x -= playerSpeed;
+                });
+                genericObjects.forEach(genericObject => {
+                    genericObject.position.x -= genericObjectSpeed;
+                });
+                enemies.forEach(enemy => {
+                    enemy.position.x -= playerSpeed;
+                });
+                enemyShooters.forEach(enemyShooter => {
+                    enemyShooter.position.x -= playerSpeed;
+                });
+                stones.forEach(stone => {
+                    stone.position.x -= playerSpeed;
+                });
+                fires.forEach(fire => {
+                    fire.position.x -= playerSpeed;
+                });
+            } else if (keys.a.pressed && scrollOffset > 0) {
+                scrollOffset -= playerSpeed;
+                platforms.forEach(platform => {
+                    platform.position.x += playerSpeed;
+                });
+                genericObjects.forEach(genericObject => {
+                    genericObject.position.x += genericObjectSpeed;
+                });
+                enemies.forEach(enemy => {
+                    enemy.position.x += playerSpeed;
+                });
+                enemyShooters.forEach(enemyShooter => {
+                    enemyShooter.position.x += playerSpeed;
+                });
+                stones.forEach(stone => {
+                    stone.position.x += playerSpeed;
+                });
+                fires.forEach(fire => {
+                    fire.position.x += playerSpeed;
+                });
+            }
+        }
 }
 
 // Reduce player's life and reset the game if there are lives left
@@ -582,17 +633,125 @@ window.addEventListener("keyup", (event) => {
 });
 
 // // Editor mode specific event listeners
+// if (editorMode) {
+//     document.getElementById('selectPlatform')!.addEventListener('click', () => {
+//         selectedObjectType = 'platform';
+//     });
+
+//     document.getElementById('selectEnemy')!.addEventListener('click', () => {
+//         selectedObjectType = 'enemy';
+//     });
+
+//     document.getElementById('selectFire')!.addEventListener('click', () => {
+//         selectedObjectType = 'fire';
+//     });
+
+//     document.getElementById('saveLevel')!.addEventListener('click', saveLevel);
+//     document.getElementById('loadLevel')!.addEventListener('click', () => {
+//         document.getElementById('fileInput')!.click();
+//     });
+//     document.getElementById('fileInput')!.addEventListener('change', loadLevel);
+
+//     canvas.addEventListener('mousedown', (e) => {
+//         if (editorMode) {
+//             const mouseX = e.offsetX;
+//             const mouseY = e.offsetY;
+//             draggingObject = findObjectAtPosition(mouseX, mouseY);
+//             // if (!draggingObject) {
+//             //     placeObject(mouseX, mouseY);
+//             // }
+//         }
+//     });
+
+//     canvas.addEventListener('mousemove', (e) => {
+//         if (editorMode && draggingObject) {
+//             const mouseX = e.offsetX;
+//             const mouseY = e.offsetY;
+//             draggingObject.position.x = mouseX;
+//             draggingObject.position.y = mouseY;
+//         }
+//     });
+
+//     canvas.addEventListener('mouseup', () => {
+//         if (editorMode) {
+//             draggingObject = null;
+//         }
+//     });
+// }
+
+// // Place new object in editor mode
+// function placeObject(x: number, y: number) {
+//     if (selectedObjectType === 'platform') {
+//         platforms.push(new Platform({ x, y, image }));
+//     } else if (selectedObjectType === 'enemy') {
+//         enemies.push(new Enemy({ x, y }));
+//     } else if (selectedObjectType === 'fire') {
+//         fires.push(new Fire({ x, y }));
+//     }
+// }
+
+// // Find an object at a specific position in editor mode
+// function findObjectAtPosition(x: number, y: number) {
+//     return platforms.find(platform => x >= platform.position.x && x <= platform.position.x + platform.width &&
+//         y >= platform.position.y && y <= platform.position.y + platform.height) ||
+//         enemies.find(enemy => x >= enemy.position.x && x <= enemy.position.x + enemy.width &&
+//         y >= enemy.position.y && y <= enemy.position.y + enemy.height) ||
+//         fires.find(fire => x >= fire.position.x && x <= fire.position.x + fire.width &&
+//         y >= fire.position.y && y <= fire.position.y + fire.height);
+// }
+
+// // Save the current level data
+// function saveLevel() {
+//     const levelData = {
+//         platforms: platforms.map(platform => ({ x: platform.position.x, y: platform.position.y })),
+//         enemies: enemies.map(enemy => ({ x: enemy.position.x, y: enemy.position.y })),
+//         fires: fires.map(fire => ({ x: fire.position.x, y: fire.position.y }))
+//     };
+//     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(levelData));
+//     const downloadAnchorNode = document.createElement('a');
+//     downloadAnchorNode.setAttribute("href", dataStr);
+//     downloadAnchorNode.setAttribute("download", "level.json");
+//     document.body.appendChild(downloadAnchorNode);
+//     downloadAnchorNode.click();
+//     downloadAnchorNode.remove();
+// }
+
+// // Load a level from a file
+// function loadLevel(event: Event) {
+//     const fileInput = event.target as HTMLInputElement;
+//     if (fileInput.files) {
+//         const file = fileInput.files[0];
+//         const reader = new FileReader();
+//         reader.onload = (e) => {
+//             const levelData = JSON.parse(e.target!.result as string);
+//             loadLevelData(levelData);
+//         };
+//         reader.readAsText(file);
+//     }
+// }
+
+// // Parse and load level data
+// function loadLevelData(levelData: any) {
+//     platforms = levelData.platforms.map((platformData: any) => new Platform({ x: platformData.x, y: platformData.y, image }));
+//     enemies = levelData.enemies.map((enemyData: any) => new Enemy({ x: enemyData.x, y: enemyData.y }));
+//     fires = levelData.fires.map((fireData: any) => new Fire({ x: fireData.x, y: fireData.y }));
+// }
+
+
 if (editorMode) {
     document.getElementById('selectPlatform')!.addEventListener('click', () => {
         selectedObjectType = 'platform';
+        createAndDragNewObject();
     });
 
     document.getElementById('selectEnemy')!.addEventListener('click', () => {
         selectedObjectType = 'enemy';
+        createAndDragNewObject();
     });
 
     document.getElementById('selectFire')!.addEventListener('click', () => {
         selectedObjectType = 'fire';
+        createAndDragNewObject();
     });
 
     document.getElementById('saveLevel')!.addEventListener('click', saveLevel);
@@ -626,6 +785,23 @@ if (editorMode) {
             draggingObject = null;
         }
     });
+}
+
+// Create and drag a new object
+function createAndDragNewObject() {
+    const x = canvas.width / 2; // Start position can be the center of the canvas
+    const y = canvas.height / 2;
+
+    if (selectedObjectType === 'platform') {
+        draggingObject = new Platform({ x, y, image });
+        platforms.push(draggingObject);
+    } else if (selectedObjectType === 'enemy') {
+        draggingObject = new Enemy({ x, y });
+        enemies.push(draggingObject);
+    } else if (selectedObjectType === 'fire') {
+        draggingObject = new Fire({ x, y });
+        fires.push(draggingObject);
+    }
 }
 
 // Place new object in editor mode
@@ -685,9 +861,6 @@ function loadLevelData(levelData: any) {
     enemies = levelData.enemies.map((enemyData: any) => new Enemy({ x: enemyData.x, y: enemyData.y }));
     fires = levelData.fires.map((fireData: any) => new Fire({ x: fireData.x, y: fireData.y }));
 }
-
-
-
 
 
 // other imports and game setup code here...
