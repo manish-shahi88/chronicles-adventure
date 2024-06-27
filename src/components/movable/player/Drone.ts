@@ -1,7 +1,7 @@
 import {ctx, enemies, enemyShooters, player } from "../../../main";
 import { detectDroneBulletToEnemyCollision, detectDroneBulletWithEnemyShooterCollision } from "../../../physics/collisionDetection";
-import { Position } from "../player/Player";
-import DroneBullet, { Velocity } from "./droneBullets";
+import { Position } from "./Player";
+import DroneBullet, { Velocity } from "./DroneBullet";
 import droneImgSrc from "/images/drone.png";
 import deathSoundSrc from "/sounds/deathSound.mp3"
 import droneBulletSoundSrc from "/sounds/droneBullet.mp3"

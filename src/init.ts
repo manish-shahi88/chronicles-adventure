@@ -1,6 +1,6 @@
 import GenericObject from "./components/nonMovable/GenericObjects";
 import { backgroundImg, canvas, image, treeImg } from "./main";
-import Platform from "./components/nonMovable/Platforms";
+import Platform from "./components/nonMovable/Platform";
 import Player from "./components/movable/player/Player";
 import { pit, treeSpace } from "./constants";
 

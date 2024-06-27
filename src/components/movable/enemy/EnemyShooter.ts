@@ -1,6 +1,6 @@
 import { gravity } from "../../../constants";
 import { stones, canvas, ctx } from "../../../main";
-import Stone from "./stone";
+import Stone from "./Stone";
 import enemyShooter from "/images/enemyShooter.png";
 
 let enemyShooterImg = new Image();
@@ -54,7 +54,7 @@ export default class EnemyShooter {
         this.cropWidth = 160;
         this.cropHeight = 177;
         
-        this.throwInterval = 40; // Adjust this value to control the frequency of throwing stones
+        this.throwInterval = 70; // Adjust this value to control the frequency of throwing stones
         this.throwTimer = 0;
     }
 

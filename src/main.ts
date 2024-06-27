@@ -10,19 +10,19 @@ import deathSoundSrc from "/sounds/deathSound.mp3"
 import bulletSoundSrc from "/sounds/gunfire.mp3"
 import explosionSrc from "/sounds/explosion.mp3"
 
-import Platform from "./components/nonMovable/Platforms";
+import Platform from "./components/nonMovable/Platform";
 import Player from "./components/movable/player/Player";
 import GenericObject from "./components/nonMovable/GenericObjects";
 import { deadEndDistance, enemyShooterSpawnX, enemySpawnX, enemySpawnY, genericObjectSpeed, pit, playerSpeed, treeSpace } from "./constants";
-import Bullet from "./components/movable/player/bullet";
-import Enemy from "./components/movable/enemy/enemy";
-import EnemyShooter from "./components/movable/enemy/enemyShooter";
-import Stone from "./components/movable/enemy/stone";
-import Fire from "./components/nonMovable/fire";
+import Bullet from "./components/movable/player/Bullet";
+import Enemy from "./components/movable/enemy/Enemy";
+import EnemyShooter from "./components/movable/enemy/EnemyShooter";
+import Stone from "./components/movable/enemy/Stone";
+import Fire from "./components/nonMovable/Fire";
 import { detectBulletCollision, detectBulletToStoneCollision, detectBulletWithEnemyShooterCollision, detectCollision, detectCollisionWithEnemy, detectCollisionWithEnemyShooters, detectPlayerEnemyCollision, detectPlayerEnemyShooterCollision, detectPlayerFireCollision, detectStoneCollision } from "./physics/collisionDetection";
-import Explosion from "./components/movable/enemy/explosion";
-import Drone from "./components/movable/player/fighterDrone";
-import BackGround from "./components/nonMovable/scene";
+import Explosion from "./components/movable/enemy/Explosion";
+import Drone from "./components/movable/player/Drone";
+import BackGround from "./components/nonMovable/Scene";
 
 const sceneImageSrc = new Image()
 sceneImageSrc.src = scene
@@ -210,7 +210,7 @@ image.onload = () => {
                 enemyShooters.push(new EnemyShooter({ x: player.position.x + enemyShooterSpawnX, y: player.position.y-enemySpawnY}));
 
             }
-        },1000)
+        },2000)
     }
 };
 

@@ -1,11 +1,11 @@
-import Enemy from "../components/movable/enemy/enemy";
-import EnemyShooter from "../components/movable/enemy/enemyShooter";
-import Stone from "../components/movable/enemy/stone";
+import Enemy from "../components/movable/enemy/Enemy";
+import EnemyShooter from "../components/movable/enemy/EnemyShooter";
+import Stone from "../components/movable/enemy/Stone";
 import Player from "../components/movable/player/Player";
-import Bullet from "../components/movable/player/bullet";
-import DroneBullet from "../components/movable/player/droneBullets";
-import Platform from "../components/nonMovable/Platforms";
-import Fire from "../components/nonMovable/fire";
+import Bullet from "../components/movable/player/Bullet";
+import DroneBullet from "../components/movable/player/DroneBullet";
+import Platform from "../components/nonMovable/Platform";
+import Fire from "../components/nonMovable/Fire";
 // import Enemy from "../components/nonMovable/fire";
 
 // collision detection between player and platform

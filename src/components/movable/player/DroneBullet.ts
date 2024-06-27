@@ -1,5 +1,5 @@
 import { ctx } from "../../../main";
-import { Position } from "../player/Player";
+import { Position } from "./Player";
 import bulletImg from "/images/droneBullet.png";
 
 const bulletImage = new Image();
